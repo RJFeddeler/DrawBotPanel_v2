@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>DrawBot Control Panel</title>
+        
+        <!-- 3rd Party Style Sheets -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" integrity="sha256-HxaKz5E/eBbvhGMNwhWRPrAR9i/lG1JeT4mD6hCQ7s4=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" integrity="sha256-e22BQKCF7bb/h/4MFJ1a4lTRR2OuAe8Hxa/3tgU5Taw=" crossorigin="anonymous" />
+
+        <!-- My Style Sheets -->
+        <link type="text/css" rel="stylesheet" href="css/general.css" />
+    </head>
+
+    <body>
+        <!-- Header -->
+        <!--<nav id="idHeader" class="page-header deep-orange lighten-1">
+        </nav>-->
+        <div id="idHeader"></div>
+
+        <!-- Body -->
+        <div id="idContent" class="trim">
+        </div>
+
+        <!--Footer-->
+        <!--<footer id="idFooter" class="deep-orange lighten-1">
+        </footer>-->
+        <div id="idFooter"></div>
+
+        <!-- Background Canvas -->
+        <div id="bgDiv">
+            <canvas id="idCanvas" width="0" height="0"></canvas>
+        </div>
+
+        <!-- 3rd Party Scripts -->
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js" integrity="sha256-uWtSXRErwH9kdJTIr1swfHFJn/d/WQ6s72gELOHXQGM=" crossorigin="anonymous"></script>
+
+        <!-- My Scripts -->
+        <script type="text/javascript" src="/js/functions.js"></script>
+        <script type="text/javascript" src="/js/UISelector.js"></script>
+        <script type="text/javascript" src="/js/UICircles.js"></script>
+        <script type="text/javascript" src="/js/circle.js"></script>
+        <script type="text/javascript" src="/js/mod.js"></script>
+
+        <script type="text/javascript">
+            var DEBUG_VERBOSE = false;
+            var circleSettings, ui;
+            const marginHeight = 50;
+
+            $(function () {
+                circleSettings = { radius: 20, borderWidth: 2, distance: 10, primaryColor: '#ff7043', backgroundColor: '#222222' };
+                ui = new UICircles('idCanvas', marginHeight, circleSettings, windowWidth(), windowHeight());
+                ui.createAnimation('waveIn', 40, null, true, true);
+
+                var timer = setInterval(ui.update.bind(ui), 20);
+                window.addEventListener('mousemove', updateMouse, false);
+                window.addEventListener('mousedown', function() { ui.popUp(); });
+
+                setTimeout(function() { setInterval(function() { ui.createRandomAnimation(200); }, 3000); }, 3000);
+            });
+
+            $(window).resize(function(){
+                if (circleSettings && ui)
+                    ui.init(marginHeight, circleSettings, windowWidth(), windowHeight());
+            });
+        </script>
+    </body>
+</html>
+            
