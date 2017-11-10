@@ -1,8 +1,8 @@
 body { display: flex; height: 100vh; flex-direction: column; }
 
-#idHeader { height: 50px; background-color: #ff7043; z-index: 20; box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
-#idContent { height: 100%; width: 100%; background-color: #ff7043; z-index: 1; }
-#idFooter { height: 50px; background-color: #ff7043; z-index: 19; box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
+#idHeader { height: 50px; background-color: #0288d1; z-index: 20; box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
+#idContent { height: 100%; width: 100%; background-color: #0288d1; z-index: 1; }
+#idFooter { height: 50px; background-color: #0288d1; z-index: 19; box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
 
 #idCanvas { position: absolute; left: 0px; top: 44px; z-index: 5; }
 
