@@ -1,4 +1,28 @@
 class UISelector {
+	static horizontal(width, height, lineOffset) {
+		var list = [];
+
+		if (!(lineOffset < height))
+			return [];
+
+		for (var x = 0; x < width; x++)
+			list.push(lineOffset * width + x);
+
+		return list;
+	}
+
+	static vertical(width, height, lineOffset) {
+		var list = [];
+
+		if (!(lineOffset < width))
+			return [];
+
+		for (var y = 0; y < height; y++)
+			list.push(y * width + lineOffset);
+
+		return list;
+	}
+
 	static forwardDiagonal(width, height, lineOffset) {
 		var list = [];
 

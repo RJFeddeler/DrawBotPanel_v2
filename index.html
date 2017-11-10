@@ -55,13 +55,27 @@
             $(function () {
                 circleSettings = { radius: 20, borderWidth: 2, distance: 10, primaryColor: '#ff7043', backgroundColor: '#222222' };
                 ui = new UICircles('idCanvas', marginHeight, circleSettings, windowWidth(), windowHeight());
-                ui.createAnimation('waveIn', 40, null, true, true);
+                ui.createAnimation('forwardDiagonalLine', 40, null, true, true);
 
                 var timer = setInterval(ui.update.bind(ui), 20);
                 window.addEventListener('mousemove', updateMouse, false);
-                window.addEventListener('mousedown', function() { ui.popUp(); });
+                window.addEventListener('mousedown', function() {  });
 
-                setTimeout(function() { setInterval(function() { ui.createRandomAnimation(200); }, 3000); }, 3000);
+                setTimeout(function() {
+                    var center = ui.center;
+
+                    ui.createButton(center.x - 2, center.y, 35, 'home');
+                    setTimeout(function() {
+                        ui.createButton(center.x, center.y - 2, 35, 'pencil-square-o');
+                        setTimeout(function() {
+                            ui.createButton(center.x + 2, center.y, 35, 'files-o');
+                            setTimeout(function() {
+                                ui.createButton(center.x, center.y + 2, 35, 'cogs');
+                            }, 200);
+                        }, 200);
+                    }, 200);
+
+                    setInterval(function() { ui.createRandomAnimation(30); }, 3000); }, 3000);
             });
 
             $(window).resize(function(){

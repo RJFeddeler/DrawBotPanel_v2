@@ -1,6 +1,6 @@
 'use strict';
 
-var modDefaults = { locked: false, start: 1, goal: 1, accel: 0.1, dampen: 1.37, dampenLimit: 0.5, maxValue: 500, startVelocity: 0.1, minVelocity: 0.01, maxVelocity: 50 };
+var modDefaults = { locked: false, start: 1, goal: 1, acceleration: 0.1, dampen: 1.37, dampenLimit: 0.5, maxValue: 100, startVelocity: 0.1, minVelocity: 0.01, maxVelocity: 50 };
 
 class UICircles {
 	constructor(canvasID, marginHeight, circleSettings, width, height) {
@@ -23,9 +23,172 @@ class UICircles {
         this.canvas.setAttribute('height', this.canvasHeight);
 
         this._backgroundColor = circleSettings.backgroundColor;
+        this._font = this.ctx.font;
         this._originalSettings = circleSettings;
         this._createCircles(circleSettings);
         this.update();
+	}
+
+	createPanel(xPercent, yPercent, radiusPercent, title = '') {
+		if (DEBUG_VERBOSE) { console.log("createPanel"); }
+		var x = parseInt(this._columns * (xPercent / 100.0));
+		var y = parseInt(this._rows * (yPercent / 100.0));
+		var id = y * this._columns + x;
+
+		this._circles[id].showPrimaryColor = true;
+		this._circles[id].filled = true;
+
+		var m = this._circles[id].getModId('radius');
+		if (m < 0) {
+			this._circles[id].addMod('radius', modDefaults);
+			m = this._circles[id].getModId('radius');
+		}
+
+		if (m >= 0)
+			this._circles[id].addTriggerToMod(m, 'doNow', ['set', 'goal', 200], 'whenTriggered');
+	}
+
+	createButton(x, y, radius, icon) {
+		if (DEBUG_VERBOSE) { console.log("createButton"); }
+		
+		if (x >= this._columns)
+			x = this._columns - 1;
+		if (y >= this._rows)
+			y = this._rows - 1;
+
+		var id = y * this._columns + x;
+
+		var m = this._circles[id].getModId('radius');
+		if (m < 0)
+			m = this._circles[id].addMod('radius', modDefaults);
+		else
+			this._circles[id].removeTriggerFromMod(m, 'mouseXY');
+
+		this._circles[id].font = '40px FontAwesome';
+
+		switch (icon) {
+			case 'home': 					icon = '\uF015'; 	break;
+			case 'eye': 					icon = '\uF06E'; 	break;
+			case 'search': 					icon = '\uF002'; 	break;
+			case 'pencil': 					icon = '\uF040'; 	break;
+			case 'pencil-square': 			icon = '\uF14B'; 	break;
+			case 'pencil-square-o': 		icon = '\uF044'; 	break;
+			case 'paint-brush': 			icon = '\uF1FC'; 	break;
+			case 'print': 					icon = '\uF02F'; 	break;
+			case 'file': 					icon = '\uF15B'; 	break;
+			case 'file-o': 					icon = '\uF016'; 	break;
+			case 'file-text': 				icon = '\uF15C'; 	break;
+			case 'file-text-o': 			icon = '\uF0F6'; 	break;
+			case 'files-o': 				icon = '\uF0C5'; 	break;
+			case 'clone': 					icon = '\uF24D'; 	break;
+			case 'file-code-o': 			icon = '\uF1C9'; 	break;
+			case 'file-image-o': 			icon = '\uF1C5'; 	break;
+			case 'cog': 					icon = '\uF013'; 	break;
+			case 'cogs': 					icon = '\uF085'; 	break;
+			case 'sliders': 				icon = '\uF1DE'; 	break;
+			case 'bars': 					icon = '\uF0C9'; 	break;
+			case 'tasks': 					icon = '\uF0AE'; 	break;
+			case 'wrench': 					icon = '\uF0AD'; 	break;
+			case 'ellipsis-h': 				icon = '\uF141'; 	break;
+			case 'ellipsis-v': 				icon = '\uF142'; 	break;
+			case 'exclamation': 			icon = '\uF12A'; 	break;
+			case 'exclamation-triangle': 	icon = '\uF071'; 	break;
+			case 'exclamation-circle': 		icon = '\uF06A'; 	break;
+			case 'window-close': 			icon = '\uF2D3'; 	break;
+			case 'window-close-o': 			icon = '\uF2D4'; 	break;
+			case 'times': 					icon = '\uF00D'; 	break;
+			case 'times-circle': 			icon = '\uF057'; 	break;
+			case 'times-circle-o': 			icon = '\uF05C'; 	break;
+			default: 						icon = '\uF12A'; 	break;
+		}
+
+		this._circles[id].text = icon;
+		
+		this._circles[id].addTriggerToMod(m, 'doNow',[
+			['push'],
+			['set', 'velocity', 0.5],
+			['set', 'acceleration', -0.25],
+			['set', 'goal', 0],
+			['addTrigger', ['value', '<', 0], [
+				['pop'], 
+				['set', 'showPrimaryColor', true], 
+				['set', 'filled', true], 
+				['set', 'velocity', -1.0], 
+				['multiply', 'acceleration', 4], 
+				['set', 'dampen', 2], 
+				['set', 'dampenLimit', 2], 
+				['set', 'goal', radius],
+				['addTrigger', 'atGoal', 
+					['set', 'isButton', true]
+				]
+			], 'whenTriggered'] ], 'whenTriggered');
+	}
+
+	createAnimation(name, rate, parameters, fullscreen = false, important = false) {
+		var modNames = ['radius'];
+		var actions = [ ['unlock'], ['push'], ['set', 'value', 0.0], ['set', 'velocity', 1.0], ['set', 'acceleration', 0.1], ['set', 'minVelocity', 0.1], ['set', 'dampen', 1.6], ['set', 'dampenLimit', 1.0], ['addTrigger', 'atGoal', ['pop'], 'whenTriggered'] ];
+		var lines = [];
+
+		if (!fullscreen) {
+			var line = [];
+
+			if (name === 'horizontalLine')
+				line = UISelector.horizontal(this._columns, this._rows, getRandomInt(1, this._rows));
+			else if (name === 'verticalLine')
+				line = UISelector.vertical(this._columns, this._rows, getRandomInt(1, this._columns));
+			else if (name === 'forwardDiagonalLine')
+				line = UISelector.forwardDiagonal(this._columns, this._rows, getRandomInt(1, this._columns + this._rows - 1));
+			else if (name === 'backwardDiagonalLine')
+				line = UISelector.backwardDiagonal(this._columns, this._rows, getRandomInt(1, this._columns + this._rows - 1));
+
+			for (var i = 0; i < line.length; i++)
+				lines.push([ line[i] ]);
+		}
+		else {
+			if (name === 'horizontalLine')
+				for (var i = 0; i < this._rows; i++)
+					lines.push(UISelector.horizontal(this._columns, this._rows, i));
+			else if (name === 'verticalLine')
+				for (var i = 0; i < this._columns; i++)
+					lines.push(UISelector.vertical(this._columns, this._rows, i));
+			else if (name === 'forwardDiagonalLine')
+				for (var i = 0; i < this._columns + this._rows - 1; i++)
+					lines.push(UISelector.forwardDiagonal(this._columns, this._rows, i));
+			else if (name === 'backwardDiagonalLine')
+				for (var i = 0; i < this._columns + this._rows - 1; i++)
+					lines.push(UISelector.backwardDiagonal(this._columns, this._rows, i));
+		}
+
+		var m;
+		var now = new Date();
+		for (var i = 0; i < modNames.length; i++) {
+			for (var j = 0; j < lines.length; j++) {
+				for (var k = 0; k < lines[j].length; k++) {
+					m = this._circles[lines[j][k]].getModId(modNames[i]);
+					if (m >= 0) {
+						this._circles[lines[j][k]].addTriggerToMod(m, ['doAfter', now.getTime(), j * (1000.0 / rate)], actions, 'whenTriggered');
+					}
+				}
+			}
+		}
+	}
+
+	createRandomAnimation(rate) {
+		var i = getRandomInt(0, 4);
+
+		if (i === 0)
+			this.createAnimation('forwardDiagonalLine', rate, null);
+		else if (i === 1)
+				this.createAnimation('backwardDiagonalLine', rate, null);
+		else if (i === 2)
+			this.createAnimation('verticalLine', rate, null);
+		else
+			this.createAnimation('horizontalLine', rate, null);
+	}
+
+	clearAnimations() {
+		for (var i = 0; i < this._circles.length; i++)
+			;
 	}
 
 	_createCircles(settings) {
@@ -40,9 +203,15 @@ class UICircles {
 		this._columns = parseInt(this.canvasWidth / spacing) + 2;
 		this._rows = parseInt(this.canvasHeight / spacing) + 2;
 
+		var circleCenter = {	x: ((Math.floor(this._columns / 2) - 1) * spacing),
+								y: (Math.floor(this._rows / 2) * spacing) };
+
+		var centerOffset = { 	x: ((this.canvasWidth  / 2.0) - circleCenter.x),
+								y: ((this.canvasHeight / 2.0) - circleCenter.y) };
+
 		for (var y = 0; y < this._rows; y++) {
 			for (var x = 0; x < this._columns; x++) {
-				var c = new Circle(x * spacing, y * spacing, settings.radius);
+				var c = new Circle(x * spacing + centerOffset.x, y * spacing + centerOffset.y, settings.radius);
 				c.borderWidth = settings.borderWidth;
 				c.primaryColor = settings.primaryColor;
 				c.fillColor = settings.primaryColor;
@@ -52,220 +221,21 @@ class UICircles {
 						locked: 			true,
 						start: 				0,
 						goal: 				settings.radius,
-						accel: 				0.1,
+						acceleration:		0.1,
 						dampen: 			1.37,
 						dampenLimit: 		0.5,
-						maxValue: 			500,
+						maxValue: 			100,
 						startVelocity: 		0.5,
 						minVelocity: 		0.1,
 						maxVelocity: 		50
 				}
 
 				var modRadius = c.addMod('radius', modStruct);
-				var tRad1 = c.addTriggerToMod(modRadius, ['mouseXY', '<', 50], [ ['set', 'value', 5], ['set', 'velocity', 2] ]);
-
-				/*
-				modStruct.goal 				= 1.0;
-				modStruct.accel 			= 0.0;
-				modStruct.dampen 			= 999;
-				modStruct.dampenLimit 		= 0.0;
-				modStruct.maxValue 			= 1.0;
-				modStruct.startVelocity 	= 0.05;
-
-				var modOpacity = c.addMod('opacity', modStruct);
-				*/
+				var tRadius1 = c.addTriggerToMod(modRadius, ['mouseXY', '<', 50], [ ['set', 'value', 5], ['set', 'velocity', 2] ]);
 
 				this._circles.push(c);
 			}
 		}
-	}
-
-	createPanel(xPercent, yPercent, radiusPercent, title = '') {
-		if (DEBUG_VERBOSE) { console.log("createPanel"); }
-		var x = parseInt(this._columns * (xPercent / 100.0));
-		var y = parseInt(this._rows * (yPercent / 100.0));
-		var id = y * this._columns + x;
-
-		this._circles[id].showPrimaryColor = true;
-		this._circles[id].filled = true;
-
-		var m = this._circles[id].getModId('radius');
-		if (m >= 0) {
-			this._circles[id].addTriggerToMod(m, 'justDoIt', ['set', 'goal', 200], 'whenTriggered');
-		}
-		else {
-			this._circles[id].addMod('radius', modDefaults);
-		}
-	}
-
-	createRandomAnimation(rate) {
-		if (getRandomInt(0, 1) === 2)
-			this.createAnimation('verticalLine', rate, getRandomInt(0, this._columns - 1));
-		else
-			this.createAnimation('horizontalLine', rate, getRandomInt(0, this._rows - 1));
-	}
-
-	createAnimation(name, rate, location, fullscreen = false, important = false) {
-		if (DEBUG_VERBOSE) { console.log("createAnimation"); }
-
-		for (var i = 0; i < this._animations.length; i++) {
-			if (this._animations[i].type === 'fullscreen') {
-				if (important) {
-					// cancel already running animation somehow
-				}
-				else { return; }
-			}
-		}
-
-		/*
-		for (var i = 0; i < this._circles.length; i++) {
-			for (var j = 0; j < this._circles[i]._mods.length; j++) {
-				if (!this._circles[i]._mods[j].finishedAnimation)
-					return;
-			}
-		}
-		*/
-
-		var type = (fullscreen ? 'fullscreen' : 'small');
-		var a = { name: name, type: type, rate: rate, location: location, lastUpdate: 0, progress: 0, modifiers: [] };
-
-		if (type === 'fullscreen') {
-			if (name === 'waveIn') {
-				a.modifiers = ['radius'];
-				var ms = [{ 	locked:true, start:0, goal:this._originalSettings.radius, accel:0.1, dampen:1.6, dampenLimit:1, maxValue:500, 
-								startVelocity:1.0, minVelocity:0.1, maxVelocity:50, finishedAnimation: false }];
-			}
-		}
-		else if (type === 'small') {
-			if (name === 'horizontalLine') {
-				a.modifiers = ['radius'];
-				var ms = [{ locked:true, start:0, accel:0.1, dampen:1.6, dampenLimit:1, startVelocity:1.0, minVelocity:0.1, finishedAnimation: false }];
-			}
-			if (name === 'verticalLine') {
-				a.modifiers = ['radius'];
-				var ms = [{ locked:true, start:0, accel:0.1, dampen:1.6, dampenLimit:1, startVelocity:1.0, minVelocity:0.1, finishedAnimation: false }];
-			}
-		}
-
-		
-		if (!Array.isArray(a.modifiers))
-			a.modifiers = [a.modifiers];
-
-		if (!Array.isArray(ms))
-			ms = [ms];
-
-		if (type === 'fullscreen') {
-			for (var i = 0; i < this._circles.length; i++) {
-				if (name === 'waveIn') {
-					for (var j = 0; j < a.modifiers.length; j++) {
-						var modId = this._circles[i].getModId(a.modifiers[j]);
-						if (modId >= 0) {
-							this._circles[i]._mods[modId].push();
-							this._circles[i]._mods[modId].setModSettings(ms[j]);
-						}
-					}
-				}
-			}
-		}
-		else if (type === 'small') {
-			if (name === 'horizontalLine') {
-				for (var i = 0; i < this._columns; i++) {
-					for (var j = 0; j < a.modifiers.length; j++) {
-						var c = location * this._columns + i;
-						var modId = this._circles[c].getModId(a.modifiers[j]);
-						if (modId >= 0) {
-							this._circles[c]._mods[modId].push();
-							this._circles[c]._mods[modId].setModSettings(ms[j]);
-						}
-					}
-				}
-			}
-			if (name === 'verticalLine') {
-				for (var i = 0; i < this._rows; i++) {
-					for (var j = 0; j < a.modifiers.length; j++) {
-						var c = i * this._columns + location;
-						var modId = this._circles[c].getModId(a.modifiers[j]);
-						if (modId >= 0) {
-							this._circles[c]._mods[modId].push();
-							this._circles[c]._mods[modId].setModSettings(ms[j]);
-						}
-					}
-				}
-			}
-		}
-
-		this._animations.push(a);
-		return this._animations.length - 1;
-	}
-
-	_removeAnimation(id) {
-		if (DEBUG_VERBOSE) { console.log("_removeAnimation"); }
-		var name = this._animations[id].name;
-		var mods = this._animations[id].modifiers;
-		this._animations.splice(id, 1);
-
-		if (name === 'waveIn') {
-			for (var i = 0; i < this._circles.length; i++) {
-				for (var j = 0; j < mods.length; j++) {
-					this._circles[i]._mods[j].pop();
-				}
-			}
-		}
-		else if (name === 'horizontalLine') {
-
-		}
-		else if (name === 'verticalLine') {
-
-		}
-	}
-
-	_animate(name, progress, param = 0) {
-		if (DEBUG_VERBOSE) { console.log("_animateBig"); }
-
-		if (name === 'waveIn') { var animationLength = this._rows + this._columns - 1 };
-		if (name === 'horizontalLine') { var animationLength = this._columns - 1 };
-		if (name === 'verticalLine') { var animationLength = this._rows - 1 };
-
-		if (progress > animationLength || progress < 0)
-			return -1;
-
-		if (name === 'waveIn') {
-			var list = UISelector.forwardDiagonal(this._columns, this._rows, progress);
-			for (var i = 0; i < list.length; i++) {
-				var m = this._circles[list[i]].getModId('radius');
-				this._circles[list[i]]._mods[m].locked = false;
-				//m = this._circles[list[i]].getModId('opacity');
-				//this._circles[list[i]]._mods[m].locked = false;
-			}
-		}
-		else if (name === 'horizontalLine') {
-			//var a = { name: name, type: type, rate: rate, location: location, lastUpdate: 0, progress: 0, modifiers: ['radius'] };
-			//var ms = [{ locked:false, start:0, accel:0.1, dampen:1.6, dampenLimit:1, startVelocity:1.0, minVelocity:0.1, finishedAnimation: false }];
-			var c = param * this._columns + progress;
-			var m = this._circles[c].getModId('radius');
-			//this._circles[c]._mods[m].enabled = true;
-			this._circles[c]._mods[m].velocity = 0.0;
-			this._circles[c]._mods[m].enabled = true;
-			this._circles[c]._mods[m].value = 0.0;
-			this._circles[c]._mods[m].locked = false;
-		}
-		else if (name === 'verticalLine') {
-			//var a = { name: name, type: type, rate: rate, location: location, lastUpdate: 0, progress: 0, modifiers: ['radius'] };
-			//var ms = [{ locked:false, start:0, accel:0.1, dampen:1.6, dampenLimit:1, startVelocity:1.0, minVelocity:0.1, finishedAnimation: false }];
-			var c = progress * this._rows + param;
-			var m = this._circles[c].getModId('radius');
-			//this._circles[c]._mods[m].enabled = true;
-			this._circles[c]._mods[m].velocity = 0.0;
-			this._circles[c]._mods[m].enabled = true;
-			this._circles[c]._mods[m].value = 0.0;
-			this._circles[c]._mods[m].locked = false;
-		}
-
-		if (name === 'waveIn') { return ++progress; }
-		else if (name === 'horizontalLine') { return ++progress; }
-		else if (name === 'verticalLine') { return ++progress; }
-
-		return -1;
 	}
 
 	_drawCircles(layer) {
@@ -311,16 +281,53 @@ class UICircles {
         	if (o < 1.0 && layer > 0)
         		this.ctx.globalAlpha = o;
 
-			this.ctx.beginPath();
-			this.ctx.arc(this._circles[i].x + this._circles[i].offsetX, this._circles[i].y + this._circles[i].offsetY, this._circles[i].radius, 0, 2*Math.PI);
+        	this.ctx.beginPath();
+			this.ctx.arc(this._circles[i].x + this._circles[i].xOffset, this._circles[i].y + this._circles[i].yOffset, this._circles[i].radius, 0, 2*Math.PI);
 			
 			this._circles[i].mouseIn = (this.ctx.isPointInPath($mouseX, $mouseY)) ? true : false;
 			
+			if (layer === 2) {
+				this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+				this.ctx.shadowBlur = 10;
+				this.ctx.shadowOffsetX = 0;
+				this.ctx.shadowOffsetY = 4;
+			}
+
 			this.ctx.stroke();
 
 			if (this._circles[i].filled) {
 				this.ctx.fillStyle = c;
 				this.ctx.fill();
+			}
+
+			this.ctx.shadowColor = "black";
+			this.ctx.shadowBlur = 0;
+			this.ctx.shadowOffsetX = 0;
+			this.ctx.shadowOffsetY = 0;
+
+			if (this._circles[i].isButton) {
+				if (this._circles[i].font === '' || this._circles[i].text === '')
+					this._circles[i].isButton = false;
+				else {
+					if (this._circles[i].mouseIn) {
+						this.ctx.shadowColor = 'rgba(200, 190, 100, 0.9)';
+						this.ctx.shadowBlur = 7;
+						this.ctx.shadowOffsetX = 0;
+						this.ctx.shadowOffsetY = 0;
+					}
+
+					this.ctx.font = this._circles[i].font;
+					this.ctx.fillStyle = '#222222';
+					this.ctx.fillText(this._circles[i].text, this._circles[i].x - 20, this._circles[i].y + 15);
+					this.ctx.font = this._font;
+
+					if (this._circles[i].mouseIn) {
+						this.ctx.shadowColor = "black";
+						this.ctx.shadowBlur = 0;
+						this.ctx.shadowOffsetX = 0;
+						this.ctx.shadowOffsetY = 0;
+					}
+				}
 			}
 
 			if (o < 1.0)
@@ -329,6 +336,8 @@ class UICircles {
 	}
 
 	getCircleFromXY(x, y) { return y * this._columns + x; }
+
+	get center() { return { x: (Math.floor(this._columns / 2) - 1), y: Math.floor(this._rows / 2) }; }
 
 	_drawMaskLayer() { this._drawCircles(1); }
 
@@ -371,44 +380,6 @@ class UICircles {
 		this._drawTopLayer();
 	}
 
-	_updateAnimations() {
-		if (DEBUG_VERBOSE) { console.log("_updateAnimations"); }
-		if (!this.ready)
-			return;
-
-		for (var i = 0; i < this._animations.length; i++) {
-			if (true) { //(this._animations[i].type === 'fullscreen') {
-				var now = new Date();
-				var timeDelta = (1000.0 / this._animations[i].rate);
-				if ((now - this._animations[i].lastUpdate) > timeDelta) {
-					if (this._animations[i].progress >= 0)
-						this._animations[i].progress = this._animate(this._animations[i].name, this._animations[i].progress, this._animations[i].location);
-					else {
-						if (this._animations[i].type === 'fullscreen') {
-							var animationComplete = true;
-							for (var j = 0; j < this._circles.length && animationComplete === true; j++) {
-								for (var k = 0; k < this._animations[i].modifiers.length; k++) {
-									var m = this._circles[j].getModId(this._animations[i].modifiers[k]);
-									if ((m >= 0) && (!this._circles[j]._mods[m].finishedAnimation))
-										animationComplete = false;
-								}
-							}
-							if (animationComplete) {
-								this._removeAnimation(i);
-								continue;
-							}
-						}
-						else if (this._animations[i].type === 'small') {
-
-						}
-					}
-
-					this._animations[i].lastUpdate = now;
-				}
-			}
-		}
-	}
-
 	_updateCircles() {
 		if (DEBUG_VERBOSE) { console.log("_updateCircles"); }
 		if (!this.ready)
@@ -422,7 +393,6 @@ class UICircles {
 		if (!this.ready)
 			return;
 
-		this._updateAnimations();
 		this._updateCircles();
 		this._drawCanvas();
 	}
