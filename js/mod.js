@@ -3,7 +3,7 @@ class Mod {
 		this._name = name;
 		this._value = settings.start || 0.0;
 		this._goal = settings.goal || 0.0;
-		this._accel = settings.accel || 0.1;
+		this._acceleration = settings.acceleration || 0.1;
 
 		this._maxValue = settings.maxValue || 999;
 		this._dampen  = settings.dampen || 1.27;
@@ -14,7 +14,6 @@ class Mod {
 
 		this._locked = settings.locked || false;
 		this._enabled = settings.enabled || true;
-		this._finishedAnimation = settings.finishedAnimation || true;
 		this._triggers = [];
 		this._history = [];
 	}
@@ -35,6 +34,12 @@ class Mod {
 		this._triggers[id] = { event: event, consequences: consequences, autoDelete: autoDelete };
 	}
 
+	removeTriggerByEvent(event) {
+		for (var i = 0; i < this._triggers.length; i++)
+			if ((this._triggers[i].event === event) || (Array.isArray(this._triggers[i].event) && this._triggers[i].event[0] === event))
+  				this.removeTriggerById(i);
+	}
+
 	removeTriggerById(id) {
 		if (DEBUG_VERBOSE) { console.log("removeTriggerById"); }
 		if (id >= this._triggers.length)
@@ -46,21 +51,21 @@ class Mod {
 	push() {
 		if (DEBUG_VERBOSE) { console.log("push"); }
 		var state = {
-			value: this._value,
+			//value: this._value,
 			goal: this._goal,
-			accel: this._accel,
-			maxValue: this._maxValue,
-			velocity: this._velocity,
+			acceleration: this._acceleration,
+			//maxValue: this._maxValue,
+			//velocity: this._velocity,
 			minVelocity: this._minVelocity,
 			maxVelocity: this._maxVelocity,
 			dampen: this._dampen,
 			dampenLimit: this._dampenLimit,
-			finishedAnimation: this._finishedAnimation,
-			locked: this._locked,
-			enabled: this._enabled,
-			triggers: this._triggers };
+			//locked: this._locked,
+			//enabled: this._enabled,
+			//triggers: this._triggers };
+		};
 
-			this._history.push(state);
+		this._history.push(state);
 	}
 
 	pop() {
@@ -68,51 +73,54 @@ class Mod {
 		if (this._history.length > 0) {
 			var state = this._history.splice(0, 1)[0];
 
-			//this._value = state.value;
 			this._goal = state.goal;
-			this._accel = state.accel;
-			this._maxValue = state.maxValue;
-			//this._velocity = state.velocity;
+			this._acceleration = state.acceleration;
+			//this._maxValue = state.maxValue;
 			this._minVelocity = state.minVelocity;
 			this._maxVelocity = state.maxVelocity;
 			this._dampen = state.dampen;
 			this._dampenLimit = state.dampenLimit;
-			//this._finishedAnimation = state.finishedAnimation;
 			//this._locked = state.locked;
 			//this._enabled = state.enabled;
-			this._triggers = state.triggers;
+			//this._triggers = state.triggers;
 		}
 	}
 
 	setModSettings(modStruct) {
 		if (modStruct.value != undefined) { this._value = modStruct.value; }
 		if (modStruct.goal != undefined) { this._goal = modStruct.goal; }
-		if (modStruct.accel != undefined) { this._accel = modStruct.accel; }
+		if (modStruct.acceleration != undefined) { this._acceleration = modStruct.acceleration; }
 		if (modStruct.dampen != undefined) { this._dampen = modStruct.dampen; }
 		if (modStruct.dampenLimit != undefined) { this._dampenLimit = modStruct.dampenLimit; }
 		if (modStruct.maxValue != undefined) { this._maxValue = modStruct.maxValue; }
 		if (modStruct.velocity != undefined) { this._velocity = modStruct.velocity; }
 		if (modStruct.minVelocity != undefined) { this._minVelocity = modStruct.minVelocity; }
 		if (modStruct.maxVelocity != undefined) { this._maxVelocity = modStruct.maxVelocity; }
-		if (modStruct.finishedAnimation != undefined) { this._finishedAnimation = modStruct.finishedAnimation; }
 		if (modStruct.locked != undefined) { this._locked = modStruct.locked; }
 		if (modStruct.enabled != undefined) { this._enabled = modStruct.enabled; }
 		if (modStruct.triggers != undefined) { this._triggers = modStruct.triggers; }
 	}
 
-	update() {									///////// CAN I COMBINE ENABLED AND LOCKED?
+	getModSettings() {
+		var m = { value:this._value, goal:this._goal, acceleration:this._acceleration, dampen:this._dampen, dampenLimit:this._dampenLimit, 
+			minVelocity:this._minVelocity, maxVelocity:this._maxVelocity, locked:this._locked, enabled:this._enabled, triggers:this._triggers };
+
+		return m;
+	}
+
+	update() {
 		if (DEBUG_VERBOSE) { console.log("mod update"); }
 		if (this._locked || !this._enabled)
 			return;
 
 		var before = this._value;
 
-		if ((this._value > this._goal && this._accel > 0) || (this._value < this._goal && this._accel < 0)) {
+		if ((this._value > this._goal && this._acceleration > 0) || (this._value < this._goal && this._acceleration < 0)) {
 			this._changeDirection();
 			this._velocity /= this._dampen;
 		}
 
-		this._velocity += this._accel;
+		this._velocity += this._acceleration;
 
 		if (this._velocity > this._maxVelocity) 	{ this._velocity = this._maxVelocity;	}
 		if (this._velocity < -this._maxVelocity) 	{ this._velocity = -this._maxVelocity;	}
@@ -125,17 +133,10 @@ class Mod {
 		if ((Math.abs(this._goal - this._value) <= this._dampenLimit) && (Math.abs(this._velocity) <= this._minVelocity)) {
 			this._value = this._goal;
 			this._enabled = false;
-
-			this._finishedAnimation = true;
-
-			for (var i = 0; i < this._triggers.length; i++) {
-				if (this._triggers[i].autoDelete === 'whenDone')
-					this.removeTriggerById(i);
-			}
 		}
 	}
 
-	_changeDirection() { this._accel *= -1.0; }
+	_changeDirection() { this._acceleration *= -1.0; }
 
 	get name() { return this._name; }
 
@@ -154,6 +155,9 @@ class Mod {
 	get velocity() { return this._velocity; }
 	set velocity(value) { this._velocity = value; }
 
+	get acceleration() { return this._acceleration; }
+	set acceleration(value) { this._acceleration = value; }
+
 	get dampen() { return this._dampen; }
 	set dampen(value) { this._dampen = value; }
 
@@ -162,9 +166,6 @@ class Mod {
 
 	get minVelocity() { return this._minVelocity; }
 	set minVelocity(value) { this._minVelocity = value; }
-
-	get finishedAnimation() { return this._finishedAnimation; }
-	set finishedAnimation(value) { this._finishedAnimation = (value ? true : false); }
 
 	get triggerCount() { if (DEBUG_VERBOSE) { console.log("triggerCount"); } return this._triggers.length; }
 
