@@ -309,15 +309,12 @@ class UICircles {
 				if (this._circles[i].font === '' || this._circles[i].text === '')
 					this._circles[i].isButton = false;
 				else {
-					if (this._circles[i].mouseIn) {
-						this.ctx.shadowColor = 'rgba(200, 190, 100, 0.9)';
-						this.ctx.shadowBlur = 7;
-						this.ctx.shadowOffsetX = 0;
-						this.ctx.shadowOffsetY = 0;
-					}
+					if (this._circles[i].mouseIn)
+						this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+					else
+						this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
 
 					this.ctx.font = this._circles[i].font;
-					this.ctx.fillStyle = '#222222';
 					this.ctx.fillText(this._circles[i].text, this._circles[i].x - 20, this._circles[i].y + 15);
 					this.ctx.font = this._font;
 
@@ -343,12 +340,17 @@ class UICircles {
 
 	_drawColorLayer() {
 		if (!this.bgGradient) {
-			this.bgGradient = this.ctx.createLinearGradient(0, 0, this.canvasWidth, 0);
+			this.bgGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvasHeight);
+			this.bgGradient.addColorStop(0, '#222222');		// BLUE
+			this.bgGradient.addColorStop(0.5, '#0288d1');	// BLACK
+			this.bgGradient.addColorStop(1, '#222222');		// BLUE
+			/*this.bgGradient = this.ctx.createLinearGradient(0, 0, this.canvasWidth, 0);
 			this.bgGradient.addColorStop(0, '#ff0000');		// RED
 			this.bgGradient.addColorStop(0.25, '#ff7f00');	// ORANGE
 			this.bgGradient.addColorStop(0.5, '#ffff00');	// YELLOW
 			this.bgGradient.addColorStop(0.75, '#00ff00');	// GREEN
-			this.bgGradient.addColorStop(1, '#0000ff');		// BLUE
+			this.bgGradient.addColorStop(1, '#0000ff');		// BLUE*/
+
 		}
 
 		this.ctx.globalCompositeOperation = "source-in";
