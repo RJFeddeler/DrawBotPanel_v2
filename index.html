@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" integrity="sha256-HxaKz5E/eBbvhGMNwhWRPrAR9i/lG1JeT4mD6hCQ7s4=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" integrity="sha256-j+P6EZJVrbXgwSR5Mx+eCS6FvP9Wq27MBRC/ogVriY0=" crossorigin="anonymous" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" integrity="sha256-e22BQKCF7bb/h/4MFJ1a4lTRR2OuAe8Hxa/3tgU5Taw=" crossorigin="anonymous" />
 
         <!-- My Style Sheets -->
@@ -18,17 +19,16 @@
 
     <body>
         <!-- Header -->
-        <!--<nav id="idHeader" class="page-header deep-orange lighten-1">
-        </nav>-->
-        <div id="idHeader"></div>
-
-        <!-- Body -->
-        <div id="idContent" class="trim">
+        <div class="f-box" id="idHeader">
+            <div class="f-text"></div>
+            <div class="f-text fadeCaption fadeCaptionHidden" id="headerLabel">TEST</div>
+            <div class="f-text"></div>
         </div>
 
+        <!-- Body -->
+        <div id="idContent" class="trim"></div>
+
         <!--Footer-->
-        <!--<footer id="idFooter" class="deep-orange lighten-1">
-        </footer>-->
         <div id="idFooter"></div>
 
         <!-- Background Canvas -->
@@ -44,43 +44,43 @@
         <script type="text/javascript" src="js/functions.js"></script>
         <script type="text/javascript" src="js/UISelector.js"></script>
         <script type="text/javascript" src="js/UICircles.js"></script>
+        <script type="text/javascript" src="js/UIMenuSystem.js"></script>
+        <script type="text/javascript" src="js/UIEffects.js"></script>
+        <script type="text/javascript" src="js/UIButton.js"></script>
+        <script type="text/javascript" src="js/UIPanel.js"></script>
         <script type="text/javascript" src="js/circle.js"></script>
         <script type="text/javascript" src="js/mod.js"></script>
+        <script type="text/javascript" src="js/trigger.js"></script>
 
         <script type="text/javascript">
             var DEBUG_VERBOSE = false;
-            var circleSettings, ui;
+            var circleSettings, ui, fx, menuSystem;
             const marginHeight = 50;
 
             $(function () {
-                circleSettings = { radius: 20, borderWidth: 2, distance: 10, primaryColor: '#0288d1', backgroundColor: '#222222' }; //#ff7043
-                ui = new UICircles('idCanvas', marginHeight, circleSettings, windowWidth(), windowHeight());
-                ui.createAnimation('forwardDiagonalLine', 40, null, true, true);
+                circleSettings = { radius: 20, borderWidth: 2, distance: 10, primaryColor: '#0288d1', backgroundColor: '#222222' };
+                ui = new UICircles('idCanvas', 'blue', marginHeight, circleSettings, windowWidth(), windowHeight());
+                fx = new UIEffects(ui.rows, ui.columns);
+                menuSystem = new UIMenuSystem(ui.right, ui.bottom, ui.center);
 
-                var timer = setInterval(ui.update.bind(ui), 20);
+                fx.animateScreen('bounce', 40, 'forwardDiagonal');
+
+                //var timer = setInterval(ui.update.bind(ui), 20);
+                var timer = setInterval(function() { ui.update(); fx.update(); }, 20);
                 window.addEventListener('mousemove', updateMouse, false);
-                window.addEventListener('mousedown', function() {  });
+                //window.addEventListener('mousedown', function() { fx.createSingleFlash(140); });
+                //window.addEventListener('mousedown', function() { clearInterval(timer); });
+                //window.addEventListener('mousedown', ui.clearContents.bind(ui));
+                //window.addEventListener('mousedown', ui.hideBackButton.bind(ui));
 
-                setTimeout(function() {
-                    var center = ui.center;
-
-                    ui.createButton(center.x - 2, center.y, 35, 'home');
-                    setTimeout(function() {
-                        ui.createButton(center.x, center.y - 2, 35, 'pencil-square-o');
-                        setTimeout(function() {
-                            ui.createButton(center.x + 2, center.y, 35, 'files-o');
-                            setTimeout(function() {
-                                ui.createButton(center.x, center.y + 2, 35, 'cogs');
-                            }, 200);
-                        }, 200);
-                    }, 200);
-
-                    setInterval(function() { ui.createRandomAnimation(30); }, 3000); }, 3000);
+                setTimeout(function() { setInterval(function() { fx.animateRandomLine(40); }, 2000); }, 4000);
+                ui.showMenu(menuSystem.menu('main'), 2000);
+                
             });
 
             $(window).resize(function(){
                 if (circleSettings && ui)
-                    ui.init(marginHeight, circleSettings, windowWidth(), windowHeight());
+                    ;//ui.init(marginHeight, circleSettings, windowWidth(), windowHeight());
             });
         </script>
     </body>

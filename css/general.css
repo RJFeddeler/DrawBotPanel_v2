@@ -7,3 +7,62 @@ body { display: flex; height: 100vh; flex-direction: column; }
 #idCanvas { position: absolute; left: 0px; top: 44px; z-index: 5; }
 
 .trim { margin: 0px; padding: 0px; }
+.f-box { display: flex; justify-content: space-between; flex-wrap: nowrap; align-items: center; }
+.f-text { font-size: 1.5em; opacity: 0.6; color: #ffffff; background-color: transparent; }
+
+.myButton { position: absolute; opacity: 0.6; color: #ffffff; background-color: transparent; z-index: 25; }
+.myButton:hover { opacity: 1.0; }
+
+#backButton { position: absolute; opacity: 0.6; color: #222222; font-size: 2em; background-color: transparent; z-index: 30; }
+#backButton:hover { opacity: 1.0; }
+
+.fa-size { font-size: 2.5em; }
+
+@keyframes fadeInUpHalf 		{
+	from 	{ opacity: 0.0; transform: translate3d(0, 100%, 0); }
+	to 		{ opacity: 0.6; transform: none; } }
+@keyframes fadeOutDownHalf 		{
+	from 	{ opacity: 0.6; transform: none }
+	to 		{ opacity: 0; transform: translate3d(0, 100%, 0); } }
+@keyframes fadeOutUpHalf 		{ /* not used??? */
+	from 	{ opacity: 0.6; transform: none; }
+	to 		{ opacity: 0; transform: translate3d(0, -100%, 0); } }
+@keyframes fadeInDownHalf 		{ /* not used??? */
+	from 	{ opacity: 0; transform: translate3d(0, -100%, 0); }
+	to 		{ opacity: 0.6; transform: none; } }
+@keyframes bounceInRightHalf	{
+	from, 60%, 75%, 90%, to { animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); }
+	from 	{ opacity: 0; transform: translate3d(600px, 0, 0); }
+	60% 	{ opacity: 0.6; transform: translate3d(-25px, 0, 0); }
+	75% 	{ transform: translate3d(10px, 0, 0); }
+	90% 	{ transform: translate3d(-5px, 0, 0); }
+	to 		{ transform: none; } }
+
+.fadeInUpHalf 		{ animation-name: fadeInUpHalf;			animation-duration: 0.6s; }
+.fadeOutDownHalf 	{ animation-name: fadeOutDownHalf;		animation-duration: 0.6s; }
+.fadeOutUpHalf 		{ animation-name: fadeOutUpHalf; 		animation-duration: 0.4s; }
+.fadeInDownHalf 	{ animation-name: fadeInDownHalf;		animation-duration: 0.4s; }
+.bounceInRightHalf 	{ animation-name: bounceInRightHalf; 	animation-duration: 0.7s; }
+
+.fadeCaption {
+	font-size: 1.5em; color: #ffffff; background-color: transparent;
+	
+	-webkit-transition: opacity 0.4s, 	-webkit-transform 0.4s;
+		-ms-transition: opacity 0.4s, 		-ms-transform 0.4s;
+			transition: opacity 0.4s, 			transform 0.4s;
+}
+
+.fadeCaptionHidden {
+	opacity: 0.0;
+		-ms-transform: 	translate(0px, -20px);
+    -webkit-transform: 	translate(0px, -20px);
+    		transform: 	translate(0px, -20px);
+}
+
+.fadeCaptionShown {
+	opacity: 0.7;
+		-ms-transform: 	translate(0px, 0px);
+    -webkit-transform: 	translate(0px, 0px);
+    		transform: 	translate(0px, 0px);
+}
+

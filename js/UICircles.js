@@ -1,245 +1,274 @@
 'use strict';
 
-var modDefaults = { locked: false, start: 1, goal: 1, acceleration: 0.1, dampen: 1.37, dampenLimit: 0.5, maxValue: 100, startVelocity: 0.1, minVelocity: 0.01, maxVelocity: 50 };
-
 class UICircles {
-	constructor(canvasID, marginHeight, circleSettings, width, height) {
-		this.ready = false;
-		this.canvas = document.getElementById(canvasID)
+	constructor(canvasID, themeColor, marginHeight, circleSettings, width, height) {
+		this._ready = false;
+		this._themeColor = themeColor;
+		this._canvas = document.getElementById(canvasID);
 		
-		if (this.canvas) 	{ this.ctx = this.canvas.getContext('2d'); }
-		if (this.ctx) 		{ this.init(marginHeight, circleSettings, width, height); }
+		if (this._canvas)
+			this._ctx = this._canvas.getContext('2d');
+
+		if (this._ctx)
+			this.init(marginHeight, circleSettings, width, height);
 	}
 
 	init(marginHeight, circleSettings, width, height) {
-        this.ready = this.ctx ? true : false;
-        if (!this.ready)
+        this._ready = (this._ctx ? true : false);
+        if (!this._ready)
         	return;
 
-        this.canvasWidth = width;
-        this.canvasHeight = height - (2 * marginHeight - 12);
+        this._canvasWidth = width;
+        this._canvasHeight = height - (2 * marginHeight - 12);
 
-        this.canvas.setAttribute('width', this.canvasWidth);
-        this.canvas.setAttribute('height', this.canvasHeight);
+        this._canvas.setAttribute('width', this._canvasWidth);
+        this._canvas.setAttribute('height', this._canvasHeight);
 
-        this._backgroundColor = circleSettings.backgroundColor;
-        this._font = this.ctx.font;
         this._originalSettings = circleSettings;
+        this._backgroundColor = circleSettings.backgroundColor;
+        this._mouseOnAButton = false;
+
+        this._buttons = [];
+        this._panels  = [];
+
         this._createCircles(circleSettings);
         this.update();
 	}
 
-	createPanel(xPercent, yPercent, radiusPercent, title = '') {
-		if (DEBUG_VERBOSE) { console.log("createPanel"); }
-		var x = parseInt(this._columns * (xPercent / 100.0));
-		var y = parseInt(this._rows * (yPercent / 100.0));
-		var id = y * this._columns + x;
-
-		this._circles[id].showPrimaryColor = true;
-		this._circles[id].filled = true;
-
-		var m = this._circles[id].getModId('radius');
-		if (m < 0) {
-			this._circles[id].addMod('radius', modDefaults);
-			m = this._circles[id].getModId('radius');
-		}
-
-		if (m >= 0)
-			this._circles[id].addTriggerToMod(m, 'doNow', ['set', 'goal', 200], 'whenTriggered');
-	}
-
-	createButton(x, y, radius, icon) {
-		if (DEBUG_VERBOSE) { console.log("createButton"); }
-		
-		if (x >= this._columns)
-			x = this._columns - 1;
-		if (y >= this._rows)
-			y = this._rows - 1;
-
-		var id = y * this._columns + x;
-
-		var m = this._circles[id].getModId('radius');
-		if (m < 0)
-			m = this._circles[id].addMod('radius', modDefaults);
-		else
-			this._circles[id].removeTriggerFromMod(m, 'mouseXY');
-
-		this._circles[id].font = '40px FontAwesome';
-
-		switch (icon) {
-			case 'home': 					icon = '\uF015'; 	break;
-			case 'eye': 					icon = '\uF06E'; 	break;
-			case 'search': 					icon = '\uF002'; 	break;
-			case 'pencil': 					icon = '\uF040'; 	break;
-			case 'pencil-square': 			icon = '\uF14B'; 	break;
-			case 'pencil-square-o': 		icon = '\uF044'; 	break;
-			case 'paint-brush': 			icon = '\uF1FC'; 	break;
-			case 'print': 					icon = '\uF02F'; 	break;
-			case 'file': 					icon = '\uF15B'; 	break;
-			case 'file-o': 					icon = '\uF016'; 	break;
-			case 'file-text': 				icon = '\uF15C'; 	break;
-			case 'file-text-o': 			icon = '\uF0F6'; 	break;
-			case 'files-o': 				icon = '\uF0C5'; 	break;
-			case 'clone': 					icon = '\uF24D'; 	break;
-			case 'file-code-o': 			icon = '\uF1C9'; 	break;
-			case 'file-image-o': 			icon = '\uF1C5'; 	break;
-			case 'cog': 					icon = '\uF013'; 	break;
-			case 'cogs': 					icon = '\uF085'; 	break;
-			case 'sliders': 				icon = '\uF1DE'; 	break;
-			case 'bars': 					icon = '\uF0C9'; 	break;
-			case 'tasks': 					icon = '\uF0AE'; 	break;
-			case 'wrench': 					icon = '\uF0AD'; 	break;
-			case 'ellipsis-h': 				icon = '\uF141'; 	break;
-			case 'ellipsis-v': 				icon = '\uF142'; 	break;
-			case 'exclamation': 			icon = '\uF12A'; 	break;
-			case 'exclamation-triangle': 	icon = '\uF071'; 	break;
-			case 'exclamation-circle': 		icon = '\uF06A'; 	break;
-			case 'window-close': 			icon = '\uF2D3'; 	break;
-			case 'window-close-o': 			icon = '\uF2D4'; 	break;
-			case 'times': 					icon = '\uF00D'; 	break;
-			case 'times-circle': 			icon = '\uF057'; 	break;
-			case 'times-circle-o': 			icon = '\uF05C'; 	break;
-			default: 						icon = '\uF12A'; 	break;
-		}
-
-		this._circles[id].text = icon;
-		
-		this._circles[id].addTriggerToMod(m, 'doNow',[
-			['push'],
-			['set', 'velocity', 0.5],
-			['set', 'acceleration', -0.25],
-			['set', 'goal', 0],
-			['addTrigger', ['value', '<', 0], [
-				['pop'], 
-				['set', 'showPrimaryColor', true], 
-				['set', 'filled', true], 
-				['set', 'velocity', -1.0], 
-				['multiply', 'acceleration', 4], 
-				['set', 'dampen', 2], 
-				['set', 'dampenLimit', 2], 
-				['set', 'goal', radius],
-				['addTrigger', 'atGoal', 
-					['set', 'isButton', true]
-				]
-			], 'whenTriggered'] ], 'whenTriggered');
-	}
-
-	createAnimation(name, rate, parameters, fullscreen = false, important = false) {
-		var modNames = ['radius'];
-		var actions = [ ['unlock'], ['push'], ['set', 'value', 0.0], ['set', 'velocity', 1.0], ['set', 'acceleration', 0.1], ['set', 'minVelocity', 0.1], ['set', 'dampen', 1.6], ['set', 'dampenLimit', 1.0], ['addTrigger', 'atGoal', ['pop'], 'whenTriggered'] ];
-		var lines = [];
-
-		if (!fullscreen) {
-			var line = [];
-
-			if (name === 'horizontalLine')
-				line = UISelector.horizontal(this._columns, this._rows, getRandomInt(1, this._rows));
-			else if (name === 'verticalLine')
-				line = UISelector.vertical(this._columns, this._rows, getRandomInt(1, this._columns));
-			else if (name === 'forwardDiagonalLine')
-				line = UISelector.forwardDiagonal(this._columns, this._rows, getRandomInt(1, this._columns + this._rows - 1));
-			else if (name === 'backwardDiagonalLine')
-				line = UISelector.backwardDiagonal(this._columns, this._rows, getRandomInt(1, this._columns + this._rows - 1));
-
-			for (var i = 0; i < line.length; i++)
-				lines.push([ line[i] ]);
-		}
-		else {
-			if (name === 'horizontalLine')
-				for (var i = 0; i < this._rows; i++)
-					lines.push(UISelector.horizontal(this._columns, this._rows, i));
-			else if (name === 'verticalLine')
-				for (var i = 0; i < this._columns; i++)
-					lines.push(UISelector.vertical(this._columns, this._rows, i));
-			else if (name === 'forwardDiagonalLine')
-				for (var i = 0; i < this._columns + this._rows - 1; i++)
-					lines.push(UISelector.forwardDiagonal(this._columns, this._rows, i));
-			else if (name === 'backwardDiagonalLine')
-				for (var i = 0; i < this._columns + this._rows - 1; i++)
-					lines.push(UISelector.backwardDiagonal(this._columns, this._rows, i));
-		}
-
-		var m;
-		var now = new Date();
-		for (var i = 0; i < modNames.length; i++) {
-			for (var j = 0; j < lines.length; j++) {
-				for (var k = 0; k < lines[j].length; k++) {
-					m = this._circles[lines[j][k]].getModId(modNames[i]);
-					if (m >= 0) {
-						this._circles[lines[j][k]].addTriggerToMod(m, ['doAfter', now.getTime(), j * (1000.0 / rate)], actions, 'whenTriggered');
-					}
-				}
-			}
-		}
-	}
-
-	createRandomAnimation(rate) {
-		var i = getRandomInt(0, 4);
-
-		if (i === 0)
-			this.createAnimation('forwardDiagonalLine', rate, null);
-		else if (i === 1)
-				this.createAnimation('backwardDiagonalLine', rate, null);
-		else if (i === 2)
-			this.createAnimation('verticalLine', rate, null);
-		else
-			this.createAnimation('horizontalLine', rate, null);
-	}
-
-	clearAnimations() {
-		for (var i = 0; i < this._circles.length; i++)
-			;
-	}
-
 	_createCircles(settings) {
-		if (DEBUG_VERBOSE) { console.log("_createCircles"); }
-		if (!this.ready)
+		if (!this._ready)
 			return;
 
-		this._circles = [];
-		this._animations = [];
-
 		var spacing = (2 * settings.radius) + settings.distance;
-		this._columns = parseInt(this.canvasWidth / spacing) + 2;
-		this._rows = parseInt(this.canvasHeight / spacing) + 2;
+		this._columns = Math.floor(this._canvasWidth  / spacing) + (this._canvasWidth  % spacing === 0 ? 0 : 1);
+		this._rows = 	Math.floor(this._canvasHeight / spacing) + (this._canvasHeight % spacing === 0 ? 0 : 1);
 
-		var circleCenter = {	x: ((Math.floor(this._columns / 2) - 1) * spacing),
-								y: (Math.floor(this._rows / 2) * spacing) };
+		var circleCenter = {	x: Math.floor((this._columns * spacing) / 2),
+								y: Math.floor((this._rows 	 * spacing) / 2) 		};
 
-		var centerOffset = { 	x: ((this.canvasWidth  / 2.0) - circleCenter.x),
-								y: ((this.canvasHeight / 2.0) - circleCenter.y) };
+		var centerOffset = { 	x: Math.floor(spacing / 2) - (circleCenter.x - Math.floor(this._canvasWidth / 2)),
+								y: Math.floor(spacing / 2) - (circleCenter.y - Math.floor(this._canvasHeight / 2))		};
 
+		document.getElementById('headerLabel').style.padding = "0px " + Math.ceil(centerOffset.x / 2) + "px 0px 0px";
+
+		this._circles = [];
 		for (var y = 0; y < this._rows; y++) {
 			for (var x = 0; x < this._columns; x++) {
 				var c = new Circle(x * spacing + centerOffset.x, y * spacing + centerOffset.y, settings.radius);
-				c.borderWidth = settings.borderWidth;
-				c.primaryColor = settings.primaryColor;
-				c.fillColor = settings.primaryColor;
-				c.showPrimaryColor = false;
+
+				c.borderWidth 		= settings.borderWidth;
+				c.primaryColor 		= settings.primaryColor;
+				c.fillColor 		= settings.primaryColor;
+				c.showPrimaryColor 	= false;
 
 				var modStruct = {
 						locked: 			true,
-						start: 				0,
 						goal: 				settings.radius,
-						acceleration:		0.1,
+						value: 				0,
+						maxValue: 			1000,
 						dampen: 			1.37,
-						dampenLimit: 		0.5,
-						maxValue: 			100,
-						startVelocity: 		0.5,
-						minVelocity: 		0.1,
+						dampenZero: 		0.5,
+						acceleration:		0.1,
+						velocity: 			0.5,
+						velocityZero: 		0.1,
 						maxVelocity: 		50
-				}
+				};
 
-				var modRadius = c.addMod('radius', modStruct);
-				var tRadius1 = c.addTriggerToMod(modRadius, ['mouseXY', '<', 50], [ ['set', 'value', 5], ['set', 'velocity', 2] ]);
+				var m = new Mod('radius', modStruct);
+				var t = new Trigger(100, ['mouseXY', '<', 50 ], 'resetAtGoal', 'atGoal', true );
+				t.setPrimaryConsequences({ value: 1, velocity: 1 });
+				t.setSecondaryConsequences({ dampen: 1.27, dampenZero: 0.25 });
+				m.addTrigger(t);
+				c.addMod(m);
 
 				this._circles.push(c);
 			}
 		}
 	}
 
+	showBackButton() {
+		if ($('#backButton').length > 0)
+			$('#backButton').remove();
+
+		var div = document.createElement("div");
+
+		div.id = 'backButton';
+		div.style.top 			= '0px';
+		div.style.left 			= '0px';
+		div.style.width 		= '20px';
+		div.style.height 		= '20px';
+		div.innerHTML 			= '<i class="fa fa-arrow-circle-o-left fa-fw"></i>';
+
+		document.body.appendChild(div);
+		div.addEventListener("mouseover", 	function() { ui.displayHeaderLabel('Back to Main Menu'); });
+		div.addEventListener("mouseout", 	function() { ui.clearHeaderLabel(); });
+		div.addEventListener("click", 		function() { ui.buttonClick('back'); });
+
+		var animationName = 'bounceInRightHalf'; //'fadeInUpHalf';
+		var animationEnd  = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $('#backButton').addClass(animationName).one(animationEnd, function() {
+            $(this).removeClass(animationName);
+        });
+	}
+
+	hideBackButton() {
+		if ($('#backButton').length === 0)
+			return;
+
+		var animationName = 'animated bounceOutLeft';
+		var animationEnd  = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
+        $('#backButton').addClass(animationName).one(animationEnd, function() {
+            $(this).removeClass(animationName);
+            $(this).remove();
+        });
+	}
+
+	buttonClick(name) {
+		var delay;
+		//this._createClickEffect(button);
+
+		switch (name) {
+			case 'back':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('main'), delay);
+				break;
+			case 'main_overview':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('overview'), delay);
+				break;
+			case 'main_uploadROB':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('uploadROB'), delay);
+				break;
+			case 'main_uploadIMG':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('uploadIMG'), delay);
+				break;
+			case 'main_fileManager':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('fileManager'), delay);
+				break;
+			case 'main_freeDraw':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('freeDraw'), delay);
+				break;
+			case 'main_settings':
+				delay = this.clearContents();
+				this.showMenu(menuSystem.menu('settings'), delay);
+				break;
+			default: break;
+		}
+	}
+
+	clearContents() {
+		const deleteDelay = 200;
+		var currentDelay = 0;
+
+		this.hideBackButton();
+		this.clearHeaderLabel();
+
+		while (this._buttons.length > 0) {
+			this.deleteButton(this._buttons[0].id);
+		}
+		while (this._panels.length > 0) {
+			this.deletePanel(this._panels[0].id);
+		}
+
+		return 1000; //currentDelay;
+	}
+
+	showMenu(menu, delay = 0) {
+        const menuDelay = 200;
+        var menuStart = delay;
+
+        for (var i = 0; i < menu.items.length; i++) {
+            setTimeout(function(menuItem) {
+                if (menuItem.type === 'Button')
+                    ui.createButton(menuItem.x, menuItem.y, menuItem.name, menuItem.caption, menuItem.icon);
+                else if (menuItem.type === 'Panel')
+                    ui.createPanel(menuItem.x, menuItem.y, menuItem.size, menuItem.name, menuItem.title);
+            }, (menuStart += menuDelay), menu.items[i]);
+        }
+
+        for (var i = 0; i < menu.extras.length; i++) {
+        	setTimeout(function(extraItem) {
+        		if (extraItem === 'showBackButton')
+        			this.showBackButton();
+        	}.bind(this), (menuStart += menuDelay), menu.extras[i]);
+        }
+	}
+
+	_buttonIdFromCircleId(id) {
+		for (var i = 0; i < this._buttons.length; i++)
+			if (this._buttons[i].id === id)
+				return i;
+
+		return -1;
+	}
+
+	createButton(x, y, name, label, icon) {
+		if (x >= this._columns || y >= this._rows)
+			return;
+
+		var id = y * this._columns + x;
+		var btn = new UIButton(this._ctx, id, name, label, icon);
+		//this._circles[id].button = btn;
+		this._buttons.push(btn);
+	}
+
+	deleteButton(id) {
+		for (var i = 0; i < this._buttons.length; i++) {
+			if (this._buttons[i].id === id) {
+				this._buttons[i].deleteMe();
+				this._buttons.splice(i, 1);
+
+				return;
+			}
+		}
+	}
+
+	createPanel(x, y, radius, name, title) {
+		var panel = new UIPanel(this._ctx, x, y, radius, name, title);
+		this._panels.push(panel);
+
+		return panel.id;
+	}
+
+	deletePanel(id) {
+		for (var i = 0; i < this._panels.length; i++) {
+			if (this._panels[i].id === id) {
+				this._panels[i].deleteMe();
+				this._panels.splice(i, 1);
+
+				return;
+			}
+		}
+	}
+
+	displayHeaderLabel(caption) {
+		this._mouseOnAButton = true;
+
+		document.getElementById('headerLabel').innerHTML = caption;
+
+		$('#headerLabel').removeClass('fadeCaptionHidden');
+		$('#headerLabel').addClass('fadeCaptionShown');
+	}
+
+	clearHeaderLabel() {
+		var transitionName = 'fadeCaptionHidden';
+		var transitionEnd  = 'webkitTransitionEnd mozTransitionEnd MSTransitionEnd otransitionend transitionend';
+
+		this._mouseOnAButton = false;
+
+		$('#headerLabel').removeClass('fadeCaptionShown');
+		$('#headerLabel').addClass(transitionName).one(transitionEnd, function() {
+			if (this._mouseOnAButton === false)
+            	document.getElementById('headerLabel').innerHTML = '';
+        });
+	}
+
 	_drawCircles(layer) {
-		if (!this.ready)
+		if (!this._ready)
 			return;
 
 		var c;
@@ -247,7 +276,7 @@ class UICircles {
 			if (this._circles[i].radius <= 0)
 				continue;
 
-			this.ctx.globalCompositeOperation = "source-over";
+			this._ctx.globalCompositeOperation = "source-over";
 
 			if (layer === 0) { 		// Background
 				if (this._circles[i].showPrimaryColor) { continue; }
@@ -266,8 +295,8 @@ class UICircles {
 				}
 			}
 
-			this.ctx.strokeStyle = c;
-        	this.ctx.lineWidth = this._circles[i].borderWidth;
+			this._ctx.strokeStyle = c;
+        	this._ctx.lineWidth = this._circles[i].borderWidth;
 
         	var o = 1.0;
         	if (layer === 0 && !this._circles[i].showPrimaryColor)
@@ -279,123 +308,135 @@ class UICircles {
         		continue;
 
         	if (o < 1.0 && layer > 0)
-        		this.ctx.globalAlpha = o;
+        		this._ctx.globalAlpha = o;
 
-        	this.ctx.beginPath();
-			this.ctx.arc(this._circles[i].x + this._circles[i].xOffset, this._circles[i].y + this._circles[i].yOffset, this._circles[i].radius, 0, 2*Math.PI);
+        	this._ctx.beginPath();
+			this._ctx.arc(this._circles[i].x + this._circles[i].xOffset, this._circles[i].y + this._circles[i].yOffset, this._circles[i].radius, 0, 2 * Math.PI);
 			
-			this._circles[i].mouseIn = (this.ctx.isPointInPath($mouseX, $mouseY)) ? true : false;
+			this._circles[i].mouseIn = (this._ctx.isPointInPath($mouseX, $mouseY)) ? true : false;
 			
 			if (layer === 2) {
-				this.ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
-				this.ctx.shadowBlur = 10;
-				this.ctx.shadowOffsetX = 0;
-				this.ctx.shadowOffsetY = 4;
+				this._ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+				this._ctx.shadowBlur = 10;
+				this._ctx.shadowOffsetX = 0;
+				this._ctx.shadowOffsetY = 4;
 			}
 
-			this.ctx.stroke();
+			this._ctx.stroke();
 
 			if (this._circles[i].filled) {
-				this.ctx.fillStyle = c;
-				this.ctx.fill();
+				this._ctx.fillStyle = c;
+				this._ctx.fill();
 			}
 
-			this.ctx.shadowColor = "black";
-			this.ctx.shadowBlur = 0;
-			this.ctx.shadowOffsetX = 0;
-			this.ctx.shadowOffsetY = 0;
-
-			if (this._circles[i].isButton) {
-				if (this._circles[i].font === '' || this._circles[i].text === '')
-					this._circles[i].isButton = false;
-				else {
-					if (this._circles[i].mouseIn)
-						this.ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-					else
-						this.ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-
-					this.ctx.font = this._circles[i].font;
-					this.ctx.fillText(this._circles[i].text, this._circles[i].x - 20, this._circles[i].y + 15);
-					this.ctx.font = this._font;
-
-					if (this._circles[i].mouseIn) {
-						this.ctx.shadowColor = "black";
-						this.ctx.shadowBlur = 0;
-						this.ctx.shadowOffsetX = 0;
-						this.ctx.shadowOffsetY = 0;
-					}
-				}
-			}
+			this._ctx.shadowColor = "black";
+			this._ctx.shadowBlur = 0;
+			this._ctx.shadowOffsetX = 0;
+			this._ctx.shadowOffsetY = 0;
 
 			if (o < 1.0)
-				this.ctx.globalAlpha = 1.0;
+				this._ctx.globalAlpha = 1.0;
 		}
 	}
 
-	getCircleFromXY(x, y) { return y * this._columns + x; }
+	_drawColorLayer(color, direction = 'vertical') {
+		if (!this._bgGradient || !this._bgGradientColor || (this._bgGradientColor !== color) || (this._bgGradientDirection !== direction)) {
+			this._bgGradientColor = color;
+			this._bgGradientDirection = direction;
 
-	get center() { return { x: (Math.floor(this._columns / 2) - 1), y: Math.floor(this._rows / 2) }; }
+			if (this._bgGradientColor === 'rainbow') {
+				if (this._bgGradientDirection === 'vertical')
+					this._bgGradient = this._ctx.createLinearGradient(0, 0, 0, this._canvasHeight);
+				else
+					this._bgGradient = this._ctx.createLinearGradient(0, 0, this._canvasWidth, 0);
 
-	_drawMaskLayer() { this._drawCircles(1); }
+				this._bgGradient.addColorStop(0, 	'#ff0000');		// RED
+				this._bgGradient.addColorStop(0.25, '#ff7f00');		// ORANGE
+				this._bgGradient.addColorStop(0.5, 	'#ffff00');		// YELLOW
+				this._bgGradient.addColorStop(0.75, '#00ff00');		// GREEN
+				this._bgGradient.addColorStop(1, 	'#0000ff');		// BLUE
+			}
+			else {
+				var c;
+				if (this._bgGradientColor.substr(0, 1) === '#' && (this._bgGradientColor.length === 4 || this._bgGradientColor === 7)) {
+					if (this._bgGradientColor.length === 4) {
+						var temp = this._bgGradientColor;
+						this._bgGradientColor = '#' + temp.substr(1,1) + temp.substr(1,1) + temp.substr(2,1) + temp.substr(2,1) + temp.substr(3,1) + temp.substr(3,1);
+					}
 
-	_drawColorLayer() {
-		if (!this.bgGradient) {
-			this.bgGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvasHeight);
-			this.bgGradient.addColorStop(0, '#222222');		// BLUE
-			this.bgGradient.addColorStop(0.5, '#0288d1');	// BLACK
-			this.bgGradient.addColorStop(1, '#222222');		// BLUE
-			/*this.bgGradient = this.ctx.createLinearGradient(0, 0, this.canvasWidth, 0);
-			this.bgGradient.addColorStop(0, '#ff0000');		// RED
-			this.bgGradient.addColorStop(0.25, '#ff7f00');	// ORANGE
-			this.bgGradient.addColorStop(0.5, '#ffff00');	// YELLOW
-			this.bgGradient.addColorStop(0.75, '#00ff00');	// GREEN
-			this.bgGradient.addColorStop(1, '#0000ff');		// BLUE*/
+					c = { 	red: 	parseInt('0x' + this._bgGradientColor.substr(1, 2)),
+							green: 	parseInt('0x' + this._bgGradientColor.substr(3, 2)),
+							blue: 	parseInt('0x' + this._bgGradientColor.substr(5, 2))		};
+				}
 
+				else if (this._bgGradientColor === 'blue')
+					c = { red: 2, green: 136, blue: 209 };
+				else if (this._bgGradientColor === 'orange')
+					c = { red: 255, green: 112, blue: 67 };
+				else if (this._bgGradientColor === 'red')
+					c = { red: 255, green: 20, blue: 20 };
+				else
+					c = { red: 220, green: 220, blue: 220 };
+
+				if (this._bgGradientDirection === 'vertical')
+					this._bgGradient = this._ctx.createLinearGradient(0, 0, 0, this._canvasHeight);
+				else
+					this._bgGradient = this._ctx.createLinearGradient(0, 0, this._canvasWidth, 0);
+
+				this._bgGradient.addColorStop(0, 	'rgba(' + c.red + ', ' + c.green + ', ' + c.blue + ', 0)');
+				this._bgGradient.addColorStop(0.5, 	'rgba(' + c.red + ', ' + c.green + ', ' + c.blue + ', 1)');
+				this._bgGradient.addColorStop(1, 	'rgba(' + c.red + ', ' + c.green + ', ' + c.blue + ', 0)');
+			}
 		}
 
-		this.ctx.globalCompositeOperation = "source-in";
-		this.ctx.fillStyle = this.bgGradient;
-		this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-		this.ctx.globalCompositeOperation = "source-over";
+		this._ctx.globalCompositeOperation = "source-in";
+		this._ctx.fillStyle = this._bgGradient;
+		this._ctx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
+		this._ctx.globalCompositeOperation = "source-over";
 	}
 
 	_drawBackground() {
-		this.ctx.globalCompositeOperation = "destination-atop";
-		this.ctx.fillStyle = this._backgroundColor;
-		this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+		this._ctx.globalCompositeOperation = "destination-atop";
+		this._ctx.fillStyle = this._backgroundColor;
+		this._ctx.fillRect(0, 0, this._canvasWidth, this._canvasHeight);
 
 		this._drawCircles(0);
 	}
 
 	_drawTopLayer() { this._drawCircles(2); }
-
-	_clearCanvas() { this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight); }
-
+	_drawMaskLayer() { this._drawCircles(1); }
+	_clearCanvas() { this._ctx.clearRect(0, 0, this._canvasWidth, this._canvasHeight); }
 	_drawCanvas() {
-		if (!this.ready)
-			return;
-
 		this._clearCanvas();
 		this._drawMaskLayer();
-		this._drawColorLayer();
+		this._drawColorLayer(this._themeColor);
 		this._drawBackground();
 		this._drawTopLayer();
 	}
 
-	_updateCircles() {
-		if (DEBUG_VERBOSE) { console.log("_updateCircles"); }
-		if (!this.ready)
-			return;
-
-		for (var i = 0; i < this._circles.length; i++)
-			this._circles[i].update();
-	}
-
 	update() {
-		if (!this.ready)
+		if (!this._ready)
 			return;
 
-		this._updateCircles();
+		var result;
+		for (var i = 0; i < this._circles.length; i++) {
+			result = this._circles[i].update();
+
+			if (result.deleteCircle)
+				this._circles.splice(i--, 1);
+			else if (result.buttonShown) {
+				var id = this._buttonIdFromCircleId(i);
+				if (id >= 0)
+					this._buttons[id].showIcon();
+			}
+		}
+
 		this._drawCanvas();
 	}
+
+	get center() 	{ return { floor: { x: Math.floor(this._columns / 2), y: Math.floor(this._rows / 2 - 1) }, ceiling: { x: Math.ceil(this._columns / 2), y: Math.ceil(this._rows / 2 - 1) } }; }
+	get bottom() 	{ return this._rows - 1; }
+	get right() 	{ return this._columns - 1; }
+	get rows() 		{ return this._rows; }
+	get columns() 	{ return this._columns; }
 }
