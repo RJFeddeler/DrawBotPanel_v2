@@ -1,175 +1,257 @@
 class Mod {
 	constructor(name, settings) {
-		this._name = name;
-		this._value = settings.start || 0.0;
-		this._goal = settings.goal || 0.0;
-		this._acceleration = settings.acceleration || 0.1;
+		this._name 				= name;
+		this._value 			= settings.value 			|| 0.0;
+		this._goal 				= settings.goal 			|| 0.0;
+		this._acceleration 		= settings.acceleration 	|| 0.1;
 
-		this._maxValue = settings.maxValue || 999;
-		this._dampen  = settings.dampen || 1.27;
-		this._dampenLimit = settings.dampenLimit || 0.1;
-		this._velocity = settings.startVelocity || 0.0;
-		this._minVelocity = settings.minVelocity || 0.01;
-		this._maxVelocity = settings.maxVelocity || 50;
+		this._maxValue 			= settings.maxValue 		|| 999;
+		this._minValue 			= settings.minValue 		|| -this._maxValue;
+		this._dampen  			= settings.dampen 			|| 1.27;
+		this._dampenZero 		= settings.dampenZero 		|| 0.1;
 
-		this._locked = settings.locked || false;
-		this._enabled = settings.enabled || true;
-		this._triggers = [];
-		this._history = [];
+		this._velocity 			= settings.velocity 		|| 0.0;
+		this._velocityZero 		= settings.velocityZero 	|| 0.01;
+		this._maxVelocity 		= settings.maxVelocity 		|| 50;
+		this._minVelocity 		= settings.minVelocity 		|| -this._maxVelocity;
+
+		this._atGoal			= settings.atGoal 			|| (this._value === this._goal ? true : false);
+		this._passedGoal		= settings.passedGoal 		|| false;
+
+		this._locked 			= settings.locked 			|| false;
+		this._triggers 			= [];
+		this._goalHistory 		= [];
+		this._triggerLevel 		= 0;
+
+		this._defaults 			= {};
+		this.defaults 			= settings;
 	}
 
-	addTrigger(event, consequences, autoDelete = false) {
-		if (DEBUG_VERBOSE) { console.log("addTrigger"); }
-		var trigger = { event: event, consequences: consequences, autoDelete: autoDelete };
-		this._triggers.push(trigger);
+	update(positionData) {
+		if (this._triggers.length > 1)
+			this._triggers.sort(Trigger.funcSort);
 
-		return this._triggers.length - 1;
-	}
+		var changes = {};
+		for (var i = this._triggers.length - 1; i >= 0; i--) {
+			var result = this._triggers[i].check(this.struct, positionData, this._atGoal, this._passedGoal);
+			var cut = false;
+			
+			if (result.deleteTrigger) {
+				this._triggers.splice(i, 1);
+				cut = true;
 
-	setTrigger(id, event, consequences, autoDelete = false) {
-		if (DEBUG_VERBOSE) { console.log("setTrigger"); }
-		if (id >= this.triggerCount)
-			return;
+				if (this._triggers.length === 0)
+					return { name: this._name, value: this._goal, deleteMod: true };
+			}
+				
+			this.addChanges(changes, result);
 
-		this._triggers[id] = { event: event, consequences: consequences, autoDelete: autoDelete };
-	}
-
-	removeTriggerByEvent(event) {
-		for (var i = 0; i < this._triggers.length; i++)
-			if ((this._triggers[i].event === event) || (Array.isArray(this._triggers[i].event) && this._triggers[i].event[0] === event))
-  				this.removeTriggerById(i);
-	}
-
-	removeTriggerById(id) {
-		if (DEBUG_VERBOSE) { console.log("removeTriggerById"); }
-		if (id >= this._triggers.length)
-			return;
-
-		this._triggers[id] = { event: 'removed', consequences: 'none', autoDelete: false };
-	}
-
-	push() {
-		if (DEBUG_VERBOSE) { console.log("push"); }
-		var state = {
-			//value: this._value,
-			goal: this._goal,
-			acceleration: this._acceleration,
-			//maxValue: this._maxValue,
-			//velocity: this._velocity,
-			minVelocity: this._minVelocity,
-			maxVelocity: this._maxVelocity,
-			dampen: this._dampen,
-			dampenLimit: this._dampenLimit,
-			//locked: this._locked,
-			//enabled: this._enabled,
-			//triggers: this._triggers };
-		};
-
-		this._history.push(state);
-	}
-
-	pop() {
-		if (DEBUG_VERBOSE) { console.log("pop"); }
-		if (this._history.length > 0) {
-			var state = this._history.splice(0, 1)[0];
-
-			this._goal = state.goal;
-			this._acceleration = state.acceleration;
-			//this._maxValue = state.maxValue;
-			this._minVelocity = state.minVelocity;
-			this._maxVelocity = state.maxVelocity;
-			this._dampen = state.dampen;
-			this._dampenLimit = state.dampenLimit;
-			//this._locked = state.locked;
-			//this._enabled = state.enabled;
-			//this._triggers = state.triggers;
+			if (!cut && !this._triggers[i].transparent)
+				break;
 		}
-	}
 
-	setModSettings(modStruct) {
-		if (modStruct.value != undefined) { this._value = modStruct.value; }
-		if (modStruct.goal != undefined) { this._goal = modStruct.goal; }
-		if (modStruct.acceleration != undefined) { this._acceleration = modStruct.acceleration; }
-		if (modStruct.dampen != undefined) { this._dampen = modStruct.dampen; }
-		if (modStruct.dampenLimit != undefined) { this._dampenLimit = modStruct.dampenLimit; }
-		if (modStruct.maxValue != undefined) { this._maxValue = modStruct.maxValue; }
-		if (modStruct.velocity != undefined) { this._velocity = modStruct.velocity; }
-		if (modStruct.minVelocity != undefined) { this._minVelocity = modStruct.minVelocity; }
-		if (modStruct.maxVelocity != undefined) { this._maxVelocity = modStruct.maxVelocity; }
-		if (modStruct.locked != undefined) { this._locked = modStruct.locked; }
-		if (modStruct.enabled != undefined) { this._enabled = modStruct.enabled; }
-		if (modStruct.triggers != undefined) { this._triggers = modStruct.triggers; }
-	}
+		if (Object.keys(changes).length === 0 || (Object.keys(changes).length === 1 && Object.keys(changes)[0] === 'deleteTrigger'))
+			this.struct = this._defaults;
+		else
+			this.struct = changes;
 
-	getModSettings() {
-		var m = { value:this._value, goal:this._goal, acceleration:this._acceleration, dampen:this._dampen, dampenLimit:this._dampenLimit, 
-			minVelocity:this._minVelocity, maxVelocity:this._maxVelocity, locked:this._locked, enabled:this._enabled, triggers:this._triggers };
-
-		return m;
-	}
-
-	update() {
-		if (DEBUG_VERBOSE) { console.log("mod update"); }
-		if (this._locked || !this._enabled)
-			return;
+		if (this._locked)
+			return { name: this._name, value: this._value };
 
 		var before = this._value;
 
 		if ((this._value > this._goal && this._acceleration > 0) || (this._value < this._goal && this._acceleration < 0)) {
-			this._changeDirection();
+			this._acceleration *= -1.0;
 			this._velocity /= this._dampen;
 		}
 
 		this._velocity += this._acceleration;
 
 		if (this._velocity > this._maxVelocity) 	{ this._velocity = this._maxVelocity;	}
-		if (this._velocity < -this._maxVelocity) 	{ this._velocity = -this._maxVelocity;	}
+		if (this._velocity < this._minVelocity) 	{ this._velocity = this._minVelocity;	}
+
+		if ((changes.velocity === undefined) && (this._value === this._goal) && (this._dampen > 1.0))
+			this._velocity = 0.0;
 
 		this._value += this._velocity;
 
-		if (this._value > this._maxValue) 	{ this._value = this._maxValue; 	}
-		if (this._value < -this._maxValue) 	{ this._value = -this._maxValue;	}
+		if (this._value > this._maxValue) 	{ this._value = this._maxValue; }
+		if (this._value < this._minValue) 	{ this._value = this._minValue;	}
 
-		if ((Math.abs(this._goal - this._value) <= this._dampenLimit) && (Math.abs(this._velocity) <= this._minVelocity)) {
+		if ((Math.abs(this._goal - this._value) < this._dampenZero) && (Math.abs(this._velocity) < this._velocityZero))
 			this._value = this._goal;
-			this._enabled = false;
+
+		if ((before < this._goal && this._value >= this._goal) || (before > this._goal && this.value <= this._goal))
+			this._passedGoal = true;
+		else
+			this._passedGoal = false;
+
+		this._atGoal = (this._value === this._goal ? true : false);
+
+		var returnObj = { name: this._name, value: this._value };
+
+		if (result.showPrimaryColor !== undefined)
+			Object.assign(returnObj, { showPrimaryColor: result.showPrimaryColor });
+		if (result.filled !== undefined)
+			Object.assign(returnObj, { filled: result.filled });
+		if (result.buttonShown !== undefined)
+			Object.assign(returnObj, { buttonShown: result.buttonShown });
+		if (result.deleteCircle)
+			Object.assign(returnObj, { deleteCircle: result.deleteCircle });
+		if (result.pushGoal)
+			this.pushGoal();
+		if (result.popGoal)
+			this.popGoal();
+
+		return returnObj;
+	}
+
+	pushGoal() {
+		this._goalHistory.push(this._defaults.goal);
+		this.defaults = { goal: this._goal };
+	}
+
+	popGoal() {
+		for (var i = 0; i < this._triggers.length; i++)
+			if (this._triggers[i].level === this._triggerLevel)
+				this._triggers.splice(i--, 1);
+
+		this._triggerLevel--;
+
+		this.defaults = { goal: this._goalHistory.pop() };
+		this._goal = this._defaults.goal;
+		this._passedGoal = false;
+		this._atGoal = (this._value === this._goal ? true : false);
+	}
+
+	addTrigger(trigger) 	{
+		if (trigger._passthrough.pushGoal)
+			this._triggerLevel++;
+
+		trigger.level = this._triggerLevel;
+		this._triggers.push(trigger);
+
+		return (this._triggers.length - 1);
+	}
+
+	get name() 				{ return this._name; }
+
+	get locked() 			{ return this._locked; }
+	set locked(value) 		{ this._locked = (value ? true : false); }
+
+	get value() 			{ return this._value; }
+	set value(value) 		{ this._value = value; }
+
+	get goal() 				{ return this._goal; }
+	set goal(value) 		{ this._goal = value; }
+
+	get velocity() 			{ return this._velocity; }
+	set velocity(value) 	{ this._velocity = value; }
+
+	get acceleration() 		{ return this._acceleration; }
+	set acceleration(value) { this._acceleration = value; }
+
+	get dampen() 			{ return this._dampen; }
+	set dampen(value) 		{ this._dampen = value; }
+
+	get dampenZero() 		{ return this._dampenZero; }
+	set dampenZero(value) 	{ this._dampenZero = value; }
+
+	get minVelocity() 		{ return this._minVelocity; }
+	set minVelocity(value) 	{ this._minVelocity = value; }
+
+	get triggerCount() 		{ return this._triggers.length; }
+
+	get defaults() 			{ return this._defaults; }
+	set defaults(settings) 	{
+		var s = Object.keys(settings);
+		for (var i = 0; i < s.length; i++) {
+			switch (s[i]) {
+				case 'goal': 			this._defaults.goal 		= settings.goal; 			break;
+				case 'acceleration': 	this._defaults.acceleration = settings.acceleration; 	break;
+				case 'maxValue': 		this._defaults.maxValue 	= settings.maxValue; 		break;
+				case 'minValue': 		this._defaults.minValue 	= settings.minValue; 		break;
+				case 'dampen': 			this._defaults.dampen 		= settings.dampen; 			break;
+				case 'dampenZero': 		this._defaults.dampenZero 	= settings.dampenZero; 		break;
+				case 'velocityZero': 	this._defaults.velocityZero = settings.velocityZero; 	break;
+				case 'maxVelocity': 	this._defaults.maxVelocity 	= settings.maxVelocity; 	break;
+				case 'minVelocity': 	this._defaults.minVelocity 	= settings.minVelocity; 	break;
+				default: break;
+			}
 		}
 	}
 
-	_changeDirection() { this._acceleration *= -1.0; }
+	get struct() 			{
+		return {
+			name: 			this._name,
+			value: 			this._value,
+			goal: 			this._goal,
+			acceleration: 	this._acceleration,
+			
+			maxValue: 		this._maxValue,
+			minValue: 		this._minValue,
+			dampen: 		this._dampen,
+			dampenZero: 	this._dampenZero,
+			
+			velocity: 		this._velocity,
+			velocityZero: 	this._velocityZero,
+			maxVelocity: 	this._maxVelocity,
+			minVelocity: 	this._minVelocity,
+			
+			atGoal: 		this._atGoal,
+			passedGoal: 	this._passedGoal
+		};
+	};
 
-	get name() { return this._name; }
+	set struct(struct) {
+		var s = Object.keys(struct);
 
-	get enabled() { return this._enabled; }
-	set enabled(value) { this._enabled = (value ? true : false); }
-	
-	get locked() { return this._locked; }
-	set locked(value) { this._locked = (value ? true : false); }
+		for (var i = 0; i < s.length; i++) {
+			switch (s[i]) {
+				case 'locked': 			this._locked 		= struct.locked; 		break;
+				case 'name': 			this._name 			= struct.name; 			break;
+				case 'value': 			this._value 		= struct.value; 		break;
+				case 'goal': 			this._goal 			= struct.goal; 			break;
+				case 'acceleration': 	this._acceleration 	= struct.acceleration; 	break;
+				case 'maxValue': 		this._maxValue 		= struct.maxValue; 		break;
+				case 'minValue': 		this._minValue 		= struct.minValue; 		break;
+				case 'dampen': 			this._dampen 		= struct.dampen; 		break;
+				case 'dampenZero': 		this._dampenZero 	= struct.dampenZero; 	break;
+				case 'velocity': 		this._velocity 		= struct.velocity; 		break;
+				case 'velocityZero': 	this._velocityZero 	= struct.velocityZero; 	break;
+				case 'maxVelocity': 	this._maxVelocity 	= struct.maxVelocity; 	break;
+				case 'minVelocity': 	this._minVelocity 	= struct.minVelocity; 	break;
+				default: break;
+			}
+		}
+	}
 
-	get value() { return this._value; }
-	set value(value) { this._value = value; }
+	addChanges(oldChanges, newChanges) {
+		var changes = Object.keys(newChanges);
 
-	get goal() { return this._goal; }
-	set goal(value) { this._goal = value; }
+		for (var i = 0; i < changes.length; i++) {
+			if (newChanges.relativeValue === 'value')
+				newChanges.relativeValue = this._value;
+			if (newChanges.relativeGoal === 'value')
+				newChanges.relativeGoal = this._value;
 
-	get velocity() { return this._velocity; }
-	set velocity(value) { this._velocity = value; }
-
-	get acceleration() { return this._acceleration; }
-	set acceleration(value) { this._acceleration = value; }
-
-	get dampen() { return this._dampen; }
-	set dampen(value) { this._dampen = value; }
-
-	get dampenLimit() { return this._dampenLimit; }
-	set dampenLimit(value) { this._dampenLimit = value; }
-
-	get minVelocity() { return this._minVelocity; }
-	set minVelocity(value) { this._minVelocity = value; }
-
-	get triggerCount() { if (DEBUG_VERBOSE) { console.log("triggerCount"); } return this._triggers.length; }
-
-	getTrigger(index) { if (DEBUG_VERBOSE) { console.log("getTrigger"); } return this._triggers[index].event; }
-	getConsequences(index) { if (DEBUG_VERBOSE) { console.log("getConsequences"); } return this._triggers[index].consequences; }
-	getAutoDelete(index) { if (DEBUG_VERBOSE) { console.log("autoDelete"); } return this._triggers[index].autoDelete; }
+			switch (changes[i]) {
+				case 'locked': 			if (oldChanges.locked 		=== undefined) 	oldChanges.locked 		= newChanges.locked; 		break;
+				case 'value': 			if (oldChanges.value 		=== undefined) 	oldChanges.value 		= newChanges.value; 		break;
+				case 'relativeValue': 	if (oldChanges.value 		=== undefined) 	oldChanges.value 		-= newChanges.value;		break;
+				case 'goal': 			if (oldChanges.goal 		=== undefined) 	oldChanges.goal 		= newChanges.goal; 			break;
+				case 'relativeGoal': 	if (oldChanges.goal 		=== undefined) 	oldChanges.goal 		-= newChanges.goal;			break;
+				case 'velocity': 		if (oldChanges.velocity 	=== undefined) 	oldChanges.velocity 	= newChanges.velocity; 		break;
+				case 'acceleration': 	if (oldChanges.acceleration === undefined) 	oldChanges.acceleration = newChanges.acceleration; 	break;
+				case 'maxValue': 		if (oldChanges.maxValue 	=== undefined) 	oldChanges.maxValue 	= newChanges.maxValue; 		break;
+				case 'minValue': 		if (oldChanges.minValue 	=== undefined) 	oldChanges.minValue 	= newChanges.minValue; 		break;
+				case 'dampen': 			if (oldChanges.dampen 		=== undefined) 	oldChanges.dampen 		= newChanges.dampen; 		break;
+				case 'dampenZero': 		if (oldChanges.dampenZero 	=== undefined) 	oldChanges.dampenZero 	= newChanges.dampenZero; 	break;
+				case 'velocityZero': 	if (oldChanges.velocityZero === undefined) 	oldChanges.velocityZero = newChanges.velocityZero; 	break;
+				case 'maxVelocity': 	if (oldChanges.maxVelocity 	=== undefined) 	oldChanges.maxVelocity 	= newChanges.maxVelocity; 	break;
+				case 'minVelocity': 	if (oldChanges.minVelocity 	=== undefined) 	oldChanges.minVelocity 	= newChanges.minVelocity; 	break;
+				default: break;
+			}
+		}
+	}
 }
