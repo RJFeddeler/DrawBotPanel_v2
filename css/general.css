@@ -1,35 +1,73 @@
 body { display: flex; height: 100vh; flex-direction: column; }
 
-#idHeader { height: 50px; background-color: #0288d1; z-index: 20; box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
-#idContent { height: 100%; width: 100%; background-color: #0288d1; z-index: 1; }
-#idFooter { height: 50px; background-color: #0288d1; z-index: 19; box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
-
-#idCanvas { position: absolute; left: 0px; top: 44px; z-index: 5; }
+#idHeader 	{ z-index: 20;	height: 50px; box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
+#idContent 	{ z-index: 1;	height: 100%; width: 100%; }
+#idFooter 	{ z-index: 19; 	height: 50px; box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79); }
+#idCanvas 	{ z-index: 5;	position: absolute; left: 0px; top: 44px; }
 
 .trim { margin: 0px; padding: 0px; }
 .f-box { display: flex; justify-content: space-between; flex-wrap: nowrap; align-items: center; }
 .f-text { font-size: 1.5em; opacity: 0.6; color: #ffffff; background-color: transparent; }
 
-.myButton { position: absolute; opacity: 0.6; color: #ffffff; background-color: transparent; z-index: 25; }
-.myButton:hover { opacity: 1.0; }
+#panelContent { z-index: 50; position: absolute; top: 200px; left: 100px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); }
+#panelContent .panelHeader { padding-left: 50px; padding-bottom: 20px; }
+#panelContent .panelSubtitle { font-size: 1em; padding-left: 60px; padding-bottom: 10px; }
 
-#backButton { position: absolute; opacity: 0.6; color: #222222; font-size: 2em; background-color: transparent; z-index: 30; }
+/* text-overflow: ellipsis; */
+.UIContent 					{ z-index: 25; position: absolute; margin: 0; padding: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-wrap: nowrap; }
+.UIContent div 				{ margin: 0; }
+
+.UIContent .UIReceptacle	{ background-color: #ff0000; }
+
+.UIContent .UIStrength 		{ display: flex; justify-content: center; flex-wrap: nowrap; align-items: flex-end; }
+.UIContent .UIStrength div 	{ margin: 0 1px 0 1px; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 1px; background-color: rgba(255, 255, 255, 0.6); }
+.UIContent .UIStrength .Dim { opacity: 0.2; }
+
+.UIContent .UIListItemH1 	{ font-size: 1.5em; color: rgba(255, 255, 255, 0.9); }
+.UIContent .UIListItemH2 	{ font-size: 1.3em; color: rgba(255, 255, 255, 0.9); }
+.UIContent .UIListItemH3	{ font-size: 1.2em; color: rgba(255, 255, 255, 0.9); }
+.UIContent .UIListItemH4 	{ font-size: 1.0em; color: rgba(255, 255, 255, 0.9); }
+
+.UIContent .UISplit 		{ display: flex; flex-direction: row; justify-content: center; flex-wrap: nowrap; align-items: flex-start; width: 100%; }
+.UIContent .UISplit div 	{ text-align: center; margin: 0 10px; }
+.UIContent .separatorTop 	{ position: relative; top: 12px; border-radius: 15px; border-top: 1px solid white; align-self: center; }
+.UIContent .separatorBottom { position: relative; top: -10px; border-radius: 15px; border-bottom: 1px solid white; align-self: center; }
+
+.UIContent > *:not(.UISplit):not(.UIWell):hover 	{ opacity: 0.6; }
+.UIContent > .UISplit > * > *:hover 				{ opacity: 0.6; }
+
+.UIButton { z-index: 25; position: absolute; opacity: 0.6; color: #ffffff; background-color: transparent; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+		-webkit-transition: opacity 0.5s, 	text-shadow 0.14s, 	-webkit-transform 0.14s;
+			-ms-transition: opacity 0.5s, 	text-shadow 0.14s, 		-ms-transform 0.14s;
+				transition: opacity 0.5s, 	text-shadow 0.14s, 			transform 0.14s; }
+.UIButton:not(.UIButtonClick):hover { opacity: 1.0; text-shadow: 5px 5px 4px rgba(0, 0, 0, 0.4); 
+			-ms-transform: 	translate(-1px, -2px);
+	    -webkit-transform: 	translate(-1px, -2px);
+	    		transform: 	translate(-1px, -2px);	}
+.UIButtonClick {
+	text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.0); 
+			-ms-transform: 	translate(1px, 2px);
+	    -webkit-transform: 	translate(1px, 2px);
+	    		transform: 	translate(1px, 2px);	}
+
+#backButton { z-index: 30; position: absolute; opacity: 0.6; color: #222222; font-size: 2em; background-color: transparent; }
 #backButton:hover { opacity: 1.0; }
 
 .fa-size { font-size: 2.5em; }
 
-@keyframes fadeInUpHalf 		{
+@keyframes fadeInUpHalf		{
 	from 	{ opacity: 0.0; transform: translate3d(0, 100%, 0); }
 	to 		{ opacity: 0.6; transform: none; } }
-@keyframes fadeOutDownHalf 		{
-	from 	{ opacity: 0.6; transform: none }
-	to 		{ opacity: 0; transform: translate3d(0, 100%, 0); } }
-@keyframes fadeOutUpHalf 		{ /* not used??? */
-	from 	{ opacity: 0.6; transform: none; }
-	to 		{ opacity: 0; transform: translate3d(0, -100%, 0); } }
-@keyframes fadeInDownHalf 		{ /* not used??? */
+@keyframes fadeInDownHalf	{
 	from 	{ opacity: 0; transform: translate3d(0, -100%, 0); }
 	to 		{ opacity: 0.6; transform: none; } }
+@keyframes fadeOutDownHalf	{
+	from 	{ opacity: 0.6; transform: none }
+	to 		{ opacity: 0; transform: translate3d(0, 100%, 0); } }
+@keyframes fadeOutUpHalf	{
+	from 	{ opacity: 0.6; transform: none; }
+	to 		{ opacity: 0; transform: translate3d(0, -100%, 0); } }
+
 @keyframes bounceInRightHalf	{
 	from, 60%, 75%, 90%, to { animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); }
 	from 	{ opacity: 0; transform: translate3d(600px, 0, 0); }
@@ -37,32 +75,60 @@ body { display: flex; height: 100vh; flex-direction: column; }
 	75% 	{ transform: translate3d(10px, 0, 0); }
 	90% 	{ transform: translate3d(-5px, 0, 0); }
 	to 		{ transform: none; } }
+@keyframes bounceOutLeftHalf	{
+	20% 	{ opacity: 0.6; transform: translate3d(20px, 0, 0); }
+	to 		{ opacity: 0; transform: translate3d(-600px, 0, 0); } }
+
+@keyframes zoomIn	{
+	from 	{ opacity: 0; transform: scale3d(.3, .3, .3); }
+	50% 	{ opacity: 1; } }
+@keyframes zoomOut	{
+	from 	{ opacity: 1; }
+	50% 	{ opacity: 0; }
+	to 		{ opacity: 0; transform: scale3d(.3, .3, .3); } }
+
+@keyframes fadeInUp			{
+	from 	{ opacity: 0; transform: translate3d(0, 50px, 0); }
+	50% 	{ opacity: 1; } }
+@keyframes fadeInUpRight	{
+	from 	{ opacity: 0; transform: translate3d(-50px, 50px, 0); }
+	50% 	{ opacity: 1; } }
+@keyframes fadeInUpLeft		{
+	from 	{ opacity: 0; transform: translate3d(50px, 50px, 0); }
+	50% 	{ opacity: 1; } }
+
+@keyframes fadeOutDown		{
+	from 	{ transform: none; }
+	50% 	{ opacity: 0; }
+	to 		{ opacity: 0; transform: translate3d(0, 50px, 0); } }
+@keyframes fadeOutDownRight	{
+	from 	{ transform: none; }
+	50% 	{ opacity: 0; }
+	to 		{ opacity: 0; transform: translate3d(50px, 50px, 0); } }
+@keyframes fadeOutDownLeft	{
+	from 	{ transform: none; }
+	50% 	{ opacity: 0; }
+	to 		{ opacity: 0; transform: translate3d(-50px, 50px, 0); } }
 
 .fadeInUpHalf 		{ animation-name: fadeInUpHalf;			animation-duration: 0.6s; }
 .fadeOutDownHalf 	{ animation-name: fadeOutDownHalf;		animation-duration: 0.6s; }
 .fadeOutUpHalf 		{ animation-name: fadeOutUpHalf; 		animation-duration: 0.4s; }
 .fadeInDownHalf 	{ animation-name: fadeInDownHalf;		animation-duration: 0.4s; }
+
 .bounceInRightHalf 	{ animation-name: bounceInRightHalf; 	animation-duration: 0.7s; }
+.bounceOutLeftHalf 	{ animation-name: bounceOutLeftHalf; 	animation-duration: 0.5s; }
 
-.fadeCaption {
-	font-size: 1.5em; color: #ffffff; background-color: transparent;
-	
-	-webkit-transition: opacity 0.4s, 	-webkit-transform 0.4s;
-		-ms-transition: opacity 0.4s, 		-ms-transform 0.4s;
-			transition: opacity 0.4s, 			transform 0.4s;
-}
+.zoomIn 			{ animation-name: zoomIn; 				animation-duration: 0.6s; -webkit-animation-delay: 0.4s; animation-delay: 0.4s; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
+.zoomOut 			{ animation-name: zoomOut; 				animation-duration: 0.6s; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
 
-.fadeCaptionHidden {
-	opacity: 0.0;
-		-ms-transform: 	translate(0px, -20px);
-    -webkit-transform: 	translate(0px, -20px);
-    		transform: 	translate(0px, -20px);
-}
+.fadeInUp 			{ animation-name: fadeInUp;				animation-duration: 0.6s; -webkit-animation-delay: 0.4s; animation-delay: 0.4s; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
+.fadeInUpRight 		{ animation-name: fadeInUpRight; 		animation-duration: 0.6s; -webkit-animation-delay: 0.4s; animation-delay: 0.4s; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
+.fadeInUpLeft 		{ animation-name: fadeInUpLeft;			animation-duration: 0.6s; -webkit-animation-delay: 0.4s; animation-delay: 0.4s; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
 
-.fadeCaptionShown {
-	opacity: 0.7;
-		-ms-transform: 	translate(0px, 0px);
-    -webkit-transform: 	translate(0px, 0px);
-    		transform: 	translate(0px, 0px);
-}
+.fadeOutDown 		{ animation-name: fadeOutDown;			animation-duration: 0.6s; -webkit-animation-fill-mode: both; animation-fill-mode: both; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
+.fadeOutDownRight 	{ animation-name: fadeOutDownRight;		animation-duration: 0.6s; -webkit-animation-fill-mode: both; animation-fill-mode: both; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
+.fadeOutDownLeft 	{ animation-name: fadeOutDownLeft; 		animation-duration: 0.6s; -webkit-animation-fill-mode: both; animation-fill-mode: both; -webkit-animation-fill-mode: both; animation-fill-mode: both; }
 
+.headerText 		{ font-size: 1.5em; color: #ffffff; background-color: transparent; -webkit-transition: opacity 0.4s, -webkit-transform 0.4s; -ms-transition: opacity 0.4s, -ms-transform 0.4s; transition: opacity 0.4s, transform 0.4s; }
+.headerTextHidden 	{ opacity: 0.0; -ms-transform: translate(0px, -20px); -webkit-transform: translate(0px, -20px); transform: translate(0px, -20px); }
+.headerTextShown 	{ opacity: 0.7; -ms-transform: translate(0px, 0px); -webkit-transform: translate(0px, 0px); transform: translate(0px, 0px); }

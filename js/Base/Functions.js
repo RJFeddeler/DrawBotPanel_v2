@@ -4,9 +4,6 @@ $document = $(document);
 $screen = screen;
 $screenWidth = 0;
 $screenHeight = 0;
-$lastMouseMove = new Date();
-$mouseX = -999;
-$mouseY = -999;
 
 function windowWidth() 		{ return document.documentElement.clientWidth;	}
 function windowHeight() 	{ return document.documentElement.clientHeight;	}
@@ -17,11 +14,6 @@ function screenHeight() 	{ return $screen.height(); 						}
 function divWidth(name) 	{ return $('#' + name).width(); 				}
 function divHeight(name) 	{ return $('#' + name).height(); 				}
 
-function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min) ) + min; }
-
-function updateMouse(e) {
-	var rect = bgcanvas.getBoundingClientRect();
-    $mouseX = e.clientX - rect.left;
-    $mouseY = e.clientY - rect.top;
-	$lastMouseMove = new Date();
-}
+function clearDiv(div) 			{ while(div.firstChild) div.removeChild(div.firstChild); 	}
+function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min) ) + min; 	}
+function atan2ToArc(value) 		{ return (-value < 0) ? (-value + (2 * Math.PI)) : -value; 	}
