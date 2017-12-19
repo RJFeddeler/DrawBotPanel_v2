@@ -1,4 +1,6 @@
-class UISelector {
+'use strict';
+
+class ShapeSelector {
 	static horizontal(width, height, lineOffset) {
 		var list = [];
 

@@ -1,88 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"		content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 
-        <title>DrawBot Control Panel</title>
-        
-        <!-- 3rd Party Style Sheets -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" integrity="sha256-HxaKz5E/eBbvhGMNwhWRPrAR9i/lG1JeT4mD6hCQ7s4=" crossorigin="anonymous" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" integrity="sha256-j+P6EZJVrbXgwSR5Mx+eCS6FvP9Wq27MBRC/ogVriY0=" crossorigin="anonymous" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css" integrity="sha256-e22BQKCF7bb/h/4MFJ1a4lTRR2OuAe8Hxa/3tgU5Taw=" crossorigin="anonymous" />
+		<meta property="og:type"	content="website" />
+		<meta property="og:title"	content="DrawBot Control Panel" />
+		<meta property="og:description"	content="Web interface for a CNC style drawing robot (DrawBot) created by Robert Feddeler" />
+		<meta property="og:image"	content="http://www.robertfeddeler.com/images/mainMenu.png" />
+		<meta property="og:url"		content="http://www.robertfeddeler.com/index.html" />
 
-        <!-- My Style Sheets -->
-        <link type="text/css" rel="stylesheet" href="css/general.css" />
-    </head>
+		<title>DrawBot Control Panel</title>
 
-    <body>
-        <!-- Header -->
-        <div class="f-box" id="idHeader">
-            <div class="f-text"></div>
-            <div class="f-text fadeCaption fadeCaptionHidden" id="headerLabel">TEST</div>
-            <div class="f-text"></div>
-        </div>
+		<!-- 3rd Party Style Sheets -->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+			integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+			crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css"
+			integrity="sha256-HxaKz5E/eBbvhGMNwhWRPrAR9i/lG1JeT4mD6hCQ7s4="
+			crossorigin="anonymous" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
+			integrity="sha256-e22BQKCF7bb/h/4MFJ1a4lTRR2OuAe8Hxa/3tgU5Taw="
+			crossorigin="anonymous" />
 
-        <!-- Body -->
-        <div id="idContent" class="trim"></div>
+		<!-- My Style Sheets -->
+		<link type="text/css" rel="stylesheet" href="css/general.css" />
+	</head>
 
-        <!--Footer-->
-        <div id="idFooter"></div>
+	<body>
+		<!-- Header -->
+		<div class="f-box" id="idHeader">
+			<div class="f-text"></div>
+			<div class="f-text headerText headerTextHidden" id="headerLabel"></div>
+			<div class="f-text"></div>
+		</div>
 
-        <!-- Background Canvas -->
-        <div id="bgDiv">
-            <canvas id="idCanvas" width="0" height="0"></canvas>
-        </div>
+		<!-- Body -->
+		<div id="idContent" class="trim"></div>
 
-        <!-- 3rd Party Scripts -->
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js" integrity="sha256-uWtSXRErwH9kdJTIr1swfHFJn/d/WQ6s72gELOHXQGM=" crossorigin="anonymous"></script>
+		<!--Footer-->
+		<div id="idFooter"></div>
 
-        <!-- My Scripts -->
-        <script type="text/javascript" src="js/functions.js"></script>
-        <script type="text/javascript" src="js/UISelector.js"></script>
-        <script type="text/javascript" src="js/UICircles.js"></script>
-        <script type="text/javascript" src="js/UIMenuSystem.js"></script>
-        <script type="text/javascript" src="js/UIEffects.js"></script>
-        <script type="text/javascript" src="js/UIButton.js"></script>
-        <script type="text/javascript" src="js/UIPanel.js"></script>
-        <script type="text/javascript" src="js/circle.js"></script>
-        <script type="text/javascript" src="js/mod.js"></script>
-        <script type="text/javascript" src="js/trigger.js"></script>
+		<!-- Background Canvas -->
+		<div id="bgDiv"> <canvas id="idCanvas" width="0" height="0"></canvas> </div>
 
-        <script type="text/javascript">
-            var DEBUG_VERBOSE = false;
-            var circleSettings, ui, fx, menuSystem;
-            const marginHeight = 50;
+		<!-- 3rd Party Scripts -->
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"
+			integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"
+			integrity="sha256-uWtSXRErwH9kdJTIr1swfHFJn/d/WQ6s72gELOHXQGM="
+			crossorigin="anonymous"></script>
 
-            $(function () {
-                circleSettings = { radius: 20, borderWidth: 2, distance: 10, primaryColor: '#0288d1', backgroundColor: '#222222' };
-                ui = new UICircles('idCanvas', 'blue', marginHeight, circleSettings, windowWidth(), windowHeight());
-                fx = new UIEffects(ui.rows, ui.columns);
-                menuSystem = new UIMenuSystem(ui.right, ui.bottom, ui.center);
+		<!-- Base -->
+		<script type="text/javascript" src="js/Base/Clock.js"></script>
+		<script type="text/javascript" src="js/Base/Functions.js"></script>
+		<script type="text/javascript" src="js/Base/Mouse.js"></script>
+		<script type="text/javascript" src="js/Base/MenuList.js"></script>
+		<script type="text/javascript" src="js/Base/PanelList.js"></script>
+		<script type="text/javascript" src="js/Base/ThemeList.js"></script>
+		<script type="text/javascript" src="js/Base/ShapeInterface.js"></script>
+		<script type="text/javascript" src="js/Base/ShapeEffects.js"></script>
+		<script type="text/javascript" src="js/Base/ShapeSelector.js"></script>
+		<!-- Shapes -->
+		<script type="text/javascript" src="js/Shapes/Circle.js"></script>
+		<!-- Modifiers -->
+		<script type="text/javascript" src="js/Modifiers/Mod.js"></script>
+		<script type="text/javascript" src="js/Modifiers/Trigger.js"></script>
+		<!-- Effects -->
+		<script type="text/javascript" src="js/Effects/FXEyes.js"></script>
+		<!-- Components -->
+		<script type="text/javascript" src="js/Components/UIButton.js"></script>
+		<script type="text/javascript" src="js/Components/UIPanel.js"></script>
+		<!-- Form -->
+		<script type="text/javascript" src="js/Form/UIContent.js"></script>
+		<script type="text/javascript" src="js/Form/UIRequest.js"></script>
+		<script type="text/javascript" src="js/Form/UIWell.js"></script>
+		<script type="text/javascript" src="js/Form/UIReceptacle.js"></script>
+		<script type="text/javascript" src="js/Form/UISpacer.js"></script>
+		<script type="text/javascript" src="js/Form/UISeparator.js"></script>
+		<script type="text/javascript" src="js/Form/UISplit.js"></script>
+		<script type="text/javascript" src="js/Form/UIListItem.js"></script>
+		<script type="text/javascript" src="js/Form/UIProgress.js"></script>
+		<script type="text/javascript" src="js/Form/UIStrength.js"></script>
+		<!-- Data -->
+		<script type="text/javascript" src="js/Data/RQGet.js"></script>
+		<script type="text/javascript" src="js/Data/State.js"></script>
 
-                fx.animateScreen('bounce', 40, 'forwardDiagonal');
+		<script type="text/javascript">
+			const refreshRate	= 20;
+			const marginHeight	= 50;
 
-                //var timer = setInterval(ui.update.bind(ui), 20);
-                var timer = setInterval(function() { ui.update(); fx.update(); }, 20);
-                window.addEventListener('mousemove', updateMouse, false);
-                //window.addEventListener('mousedown', function() { fx.createSingleFlash(140); });
-                //window.addEventListener('mousedown', function() { clearInterval(timer); });
-                //window.addEventListener('mousedown', ui.clearContents.bind(ui));
-                //window.addEventListener('mousedown', ui.hideBackButton.bind(ui));
+			RQGet.setState(DrawBotState);
 
-                setTimeout(function() { setInterval(function() { fx.animateRandomLine(40); }, 2000); }, 4000);
-                ui.showMenu(menuSystem.menu('main'), 2000);
-                
-            });
+			var shapeSettings	= { shape: 'Circle', radius: 20, border: 2, distance: 10	};
+			var startAnimation	= { name: 'bounce', speed: 50, direction: 'forwardDiagonal'	};
+			var periodicAnimation	= { speed: 40, interval: 4000, startDelay: 8000			};
 
-            $(window).resize(function(){
-                if (circleSettings && ui)
-                    ;//ui.init(marginHeight, circleSettings, windowWidth(), windowHeight());
-            });
-        </script>
-    </body>
+			var mouse = new Mouse();
+			var clock = new Clock(refreshRate);
+			var theme = ThemeList.theme('Default');
+
+			var ui 	= new ShapeInterface('idCanvas', shapeSettings, theme, marginHeight, windowWidth(), windowHeight());
+			var fx 	= new ShapeEffects(ui.ctx(), ui.shapes, ui.shape(), ui.rows(), ui.columns(), startAnimation, periodicAnimation);
+
+			(function () {
+				function main(tFrame) {
+					if (clock.running)
+						window.requestAnimationFrame(main);
+
+					var nextTick = clock.lastTick + clock.tickLength,
+						numTicks = 0;
+
+					if (tFrame > nextTick) {
+						var timeSinceTick = tFrame - clock.lastTick;
+						numTicks = Math.floor(timeSinceTick / clock.tickLength);
+					}
+
+					queueUpdates(numTicks);
+
+					ui.render(tFrame);
+					fx.render(tFrame);
+
+					clock.lastRender = tFrame;
+				}
+
+				function queueUpdates(numTicks) {
+					for(let i = 0; i < numTicks; i++) {
+						clock.lastTick += clock.tickLength;
+
+						ui.update(clock.lastTick);
+						fx.update(clock.lastTick);
+					}
+				}
+
+				$('#idHeader').css('background-color', theme.border);
+				$('#idFooter').css('background-color', theme.border);
+
+				ui.showMenu('M.Main', 2000);
+
+				main(performance.now());
+			})();
+
+			$(window).resize(function(){
+				if (shapeSettings && ui)
+					ui.changeDimensions(windowWidth(), windowHeight());
+			});
+
+			DrawBotState.update({
+				System_State:0, System_Version: '0.91', Time_Elapsed:0,
+				System_DrawSpeed:5, System_TravelSpeed:10, System_PrintAreaWidth:2500, System_PrintAreaHeight:2000,
+				Storage_Type:4, Storage_Label:'My Art', Storage_FileCount:31, Storage_Capacity:512, Storage_FreeSpace:256,
+				Network_State:3, Network_Mode:1, Network_Protocol:'802.11 N', Network_SSID:'FiOS-0HO18-5G', Network_Signal:60, Network_Security:4,
+				Network_IP:'192.168.0.101', Network_DHCP:1, Network_Netmask:'255.255.255.0', Network_Gateway:'192.168.0.1',
+				ArmSpec_Left_Stepper1_Range:200, ArmSpec_Left_Stepper1_StepsPerRev:400, ArmSpec_Left_Stepper1_Microstep:32,
+				ArmSpec_Left_Stepper2_Range:200, ArmSpec_Left_Stepper2_StepsPerRev:400, ArmSpec_Left_Stepper2_Microstep:32,
+				ArmSpec_Left_Servo_Range:200, ArmSpec_Left_Servo_Down:160, ArmSpec_Left_Servo_Up:90,
+				ArmSpec_Right_Stepper1_Range:200, ArmSpec_Right_Stepper1_StepsPerRev:400, ArmSpec_Right_Stepper1_Microstep:32,
+				ArmSpec_Right_Stepper2_Range:200, ArmSpec_Right_Stepper2_StepsPerRev:400, ArmSpec_Right_Stepper2_Microstep:32,
+				ArmSpec_Right_Servo_Range:200, ArmSpec_Right_Servo_Down:160, ArmSpec_Right_Servo_Up:90,
+				ArmPosition_Left_X: 0, ArmPosition_Left_Y: 0, ArmPosition_Left_Pen: 2, ArmPosition_Left_LinesDrawn: 0,
+				ArmPosition_Right_X: 0, ArmPosition_Right_Y: 0, ArmPosition_Right_Pen: 1, ArmPosition_Right_LinesDrawn: 0,
+				PrintPreview_Filename:'', PrintPreview_ScaleX:100, PrintPreview_ScaleY:100, PrintPreview_OffsetX:0, PrintPreview_OffsetY:0
+			});
+		</script>
+	</body>
 </html>
-            
