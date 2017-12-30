@@ -2,13 +2,11 @@
 
 class UIStrength {
 	constructor(source, segments = 6) {
-		this._source	= source;
+		this.element = new UIElement('div', 'UIStrength', 'Dynamic', source);
+
 		this._segments 	= segments;
 		this._value 	= 0;
 		this._changed 	= true;
-
-		this._div = document.createElement('div');
-		this._div.setAttribute('class', 'UIStrength');
 	}
 
 	handleMessage(msg, value) {
@@ -26,27 +24,27 @@ class UIStrength {
 	}
 
 	update() {
-		return new UIRequest('Value', this._source, this.handleMessage.bind(this));
+		return new UIRequest('Value', this.element.source(), this.handleMessage.bind(this));
 	}
 
 	render() {
-		clearDiv(this._div);
+		this.element.clear();
 
 		for (let i = 0; i < this._segments; i++) {
 			let subdiv = document.createElement('div');
 			
 			subdiv.style.width 	= '5px';
-			subdiv.style.height = (i * 5 + 1) + 'px'
+			subdiv.style.height = (i * 5 + 1) + 'px';
 
 			if (i >= Math.ceil(this._value / 100.0 * this._segments))
-				subdiv.setAttribute('class', 'Dim');
+				subdiv.className = 'Dim';
 
-			this._div.appendChild(subdiv);
+			this.element.append(subdiv);
 		}
 
 		this._changed = false;
 
-		return this._div;
+		return this.element.self();
 	}
 
 	changed() {

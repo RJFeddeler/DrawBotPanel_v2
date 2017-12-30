@@ -2,11 +2,10 @@
 
 class UISplit {
 	constructor(data) {
+		this.element = new UIElement('div', 'UISplit');
+
 		this._listItems = [];
 		this._changed 	= true;
-
-		this._div = document.createElement('div');
-		this._div.setAttribute('class', 'UISplit');
 
 		for (let i = 0; i < data.length; i++) {
 			let subdiv = document.createElement('div');
@@ -17,7 +16,7 @@ class UISplit {
 			}
 
 			this._listItems.push(items);
-			this._div.appendChild(subdiv);
+			this.element.append(subdiv);
 		}
 	}
 
@@ -42,7 +41,7 @@ class UISplit {
 
 		this._changed = false;
 
-		return this._div;
+		return this.element.self();
 	}
 
 	changed() {

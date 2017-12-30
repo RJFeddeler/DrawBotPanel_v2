@@ -2,15 +2,12 @@
 
 class UISeparator {
 	constructor(type) {
-		this._type 	= type;
-		this._div 	= document.createElement('div');
-
-		this._div.style.height = '15px';
-		this._div.setAttribute('class', 'autoWidth ' + (this._value === 'top' ? 'separatorTop' : 'separatorBottom'));
+		//this.element = new UIElement('div', 'UISeparator' + type, null, null, true).setStyle('height', 15);
+		this.element = new UIElement('div', 'UISeparator', null, null, true).append(new UIElement('div', 'UISeparator' + type).self());
 	}
 
 	render() {
-		return this._div;
+		return this.element.self();
 	}
 
 	changed() {

@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+
+		<!-- My Style Sheets -->
+		<link type="text/css" rel="stylesheet" href="css/animation.css" />
+
+		<style>
+			body {
+				background-color: #777777;
+			}
+
+			#buttons {
+				display: flex;
+				flex-direction: column;
+				background-color: #aaaaaa;
+				position: absolute;
+				top: 5%; left: 25px;
+				width: 150px; height: 90%;
+				overflow-y: scroll;
+				border: 1px solid black;
+				border-radius: 5px;
+				box-shadow: 4px 4px 15px black;
+			}
+
+			#buttons .button {
+				background-color: #888898;
+				color: white;
+				text-align: center;
+				border: 1px solid white;
+				border-radius: 5px;
+				margin: 5px 0;
+				padding: 8px 0;
+				width: 90%;
+				align-self: center;
+			}
+
+			#outer {
+				background-color: #aaaaaa;
+				margin: 100px 250px;
+				width: 600px; height: 400px;
+				border: 1px solid black;
+				border-radius: 5px;
+				box-shadow: 4px 4px 15px black;
+			}
+
+			#inner {
+				position: relative;
+				left: 260px; top: 160px;
+				width: 80px; height: 80px;
+				background-color: blue;
+				border-radius: 2px;
+			}
+
+			#goal {
+				position: relative;
+				left: 260px; top: 80px;
+				width: 80px; height: 80px;
+				border: 1px dashed white;
+				opacity: 0.8;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="buttons">
+			<div class="button">Fade</div>
+			<div class="button">Fade-out</div>
+			<div class="button">Fade Up</div>
+			<div class="button">Fade Up-out</div>
+			<div class="button">Fade Up Far</div>
+			<div class="button">Fade Up Far-out</div>
+			<div class="button">Fade Down</div>
+			<div class="button">Fade Down-out</div>
+			<div class="button">Fade Down Far</div>
+			<div class="button">Fade Down Far-out</div>
+			<div class="button">Fade Left</div>
+			<div class="button">Fade Left-out</div>
+			<div class="button">Fade Left Far</div>
+			<div class="button">Fade Left Far-out</div>
+			<div class="button">Fade Right</div>
+			<div class="button">Fade Right-out</div>
+			<div class="button">Fade Right Far</div>
+			<div class="button">Fade Right Far-out</div>
+			<div class="button">Fade Less</div>
+			<div class="button">Fade Less-out</div>
+			<div class="button">Fade Less Up</div>
+			<div class="button">Fade Less Up-out</div>
+			<div class="button">Fade Less Up Far</div>
+			<div class="button">Fade Less Up Far-out</div>
+			<div class="button">Fade Less Down</div>
+			<div class="button">Fade Less Down-out</div>
+			<div class="button">Fade Less Down Far</div>
+			<div class="button">Fade Less Down Far-out</div>
+			<div class="button">Fade Less Left</div>
+			<div class="button">Fade Less Left-out</div>
+			<div class="button">Fade Less Left Far</div>
+			<div class="button">Fade Less Left Far-out</div>
+			<div class="button">Fade Less Right</div>
+			<div class="button">Fade Less Right-out</div>
+			<div class="button">Fade Less Right Far</div>
+			<div class="button">Fade Less Right Far-out</div>
+			<div class="button">Stretch</div>
+			<div class="button">Stretch X</div>
+			<div class="button">Stretch Y</div>
+			<div class="button">Stretch Hard</div>
+			<div class="button">Stretch X Hard</div>
+			<div class="button">Stretch Y Hard</div>
+			<div class="button">Squish</div>
+			<div class="button">Squish X</div>
+			<div class="button">Squish Y</div>
+			<div class="button">Squish Hard</div>
+			<div class="button">Squish X Hard</div>
+			<div class="button">Squish Y Hard</div>
+			<div class="button">Squish Up</div>
+			<div class="button">Squish Up Far</div>
+			<div class="button">Squish Down</div>
+			<div class="button">Squish Down Far</div>
+			<div class="button">Squish Left</div>
+			<div class="button">Squish Left Far</div>
+			<div class="button">Squish Right</div>
+			<div class="button">Squish Right Far</div>
+			<div class="button">Bounce</div>
+			<div class="button">Bounce Up</div>
+			<div class="button">Bounce Up Far</div>
+			<div class="button">Bounce Down</div>
+			<div class="button">Bounce Down Far</div>
+			<div class="button">Bounce Left</div>
+			<div class="button">Bounce Left Far</div>
+			<div class="button">Bounce Right</div>
+			<div class="button">Bounce Right Far</div>
+			<div class="button">Blur</div>
+			<div class="button">Blur-out</div>
+			<div class="button">Blur Up</div>
+			<div class="button">Blur Up-out</div>
+			<div class="button">Blur Down</div>
+			<div class="button">Blur Down-out</div>
+			<div class="button">Blur Left</div>
+			<div class="button">Blur Left-out</div>
+			<div class="button">Blur Right</div>
+			<div class="button">Blur Right-out</div>
+			<div class="button">Blur Less</div>
+			<div class="button">Blur Less-out</div>
+			<div class="button">Blur Less Up</div>
+			<div class="button">Blur Less Up-out</div>
+			<div class="button">Blur Less Down</div>
+			<div class="button">Blur Less Down-out</div>
+			<div class="button">Blur Less Left</div>
+			<div class="button">Blur Less Left-out</div>
+			<div class="button">Blur Less Right</div>
+			<div class="button">Blur Less Right-out</div>
+			<div class="button">Flip Up</div>
+			<div class="button">Flip Up-out</div>
+			<div class="button">Flip Down</div>
+			<div class="button">Flip Down-out</div>
+			<div class="button">Flip Left</div>
+			<div class="button">Flip Left-out</div>
+			<div class="button">Flip Right</div>
+			<div class="button">Flip Right-out</div>
+			<div class="button">Blur Flip Up</div>
+			<div class="button">Blur Flip Up-out</div>
+			<div class="button">Blur Flip Down</div>
+			<div class="button">Blur Flip Down-out</div>
+			<div class="button">Blur Flip Left</div>
+			<div class="button">Blur Flip Left-out</div>
+			<div class="button">Blur Flip Right</div>
+			<div class="button">Blur Flip Right-out</div>
+			<div class="button">AroundTheWorld Up</div>
+			<div class="button">AroundTheWorld Up-out</div>
+			<div class="button">AroundTheWorld Down</div>
+			<div class="button">AroundTheWorld Down-out</div>
+			<div class="button">AroundTheWorld Left</div>
+			<div class="button">AroundTheWorld Left-out</div>
+			<div class="button">AroundTheWorld Right</div>
+			<div class="button">AroundTheWorld Right-out</div>
+			<div class="button">Blur AroundTheWorld Up</div>
+			<div class="button">Blur AroundTheWorld Up-out</div>
+			<div class="button">Blur AroundTheWorld Down</div>
+			<div class="button">Blur AroundTheWorld Down-out</div>
+			<div class="button">Blur AroundTheWorld Left</div>
+			<div class="button">Blur AroundTheWorld Left-out</div>
+			<div class="button">Blur AroundTheWorld Right</div>
+			<div class="button">Blur AroundTheWorld Right-out</div>
+			<div class="button">Hinged Flip Up</div>
+			<div class="button">Hinged Flip Up-out</div>
+			<div class="button">Hinged Flip Down</div>
+			<div class="button">Hinged Flip Down-out</div>
+			<div class="button">Hinged Flip Left</div>
+			<div class="button">Hinged Flip Left-out</div>
+			<div class="button">Hinged Flip Right</div>
+			<div class="button">Hinged Flip Right-out</div>
+		</div>
+		<div id="container">
+			<div id="outer">
+				<div id="inner"></div>
+				<div id="goal"></div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var doIt = function(arg) {
+				var str = 'anim ';
+				
+				switch(arg.innerHTML) {
+					case 'Fade':
+						str += 'fade';
+						break;
+					case 'Fade-out':
+						str += 'fade-out';
+						break;
+					case 'Fade Up':
+						str += 'fadeUp';
+						break;
+					case 'Fade Up-out':
+						str += 'fadeUp-out';
+						break;
+					case 'Fade Up Far':
+						str += 'fadeUpFar';
+						break;
+					case 'Fade Up Far-out':
+						str += 'fadeUpFar-out';
+						break;
+					case 'Fade Down':
+						str += 'fadeDown';
+						break;
+					case 'Fade Down-out':
+						str += 'fadeDown-out';
+						break;
+					case 'Fade Down Far':
+						str += 'fadeDownFar';
+						break;
+					case 'Fade Down Far-out':
+						str += 'fadeDownFar-out';
+						break;
+					case 'Fade Left':
+						str += 'fadeLeft';
+						break;
+					case 'Fade Left-out':
+						str += 'fadeLeft-out';
+						break;
+					case 'Fade Left Far':
+						str += 'fadeLeftFar';
+						break;
+					case 'Fade Left Far-out':
+						str += 'fadeLeftFar-out';
+						break;
+					case 'Fade Right':
+						str += 'fadeRight';
+						break;
+					case 'Fade Right-out':
+						str += 'fadeRight-out';
+						break;
+					case 'Fade Right Far':
+						str += 'fadeRightFar';
+						break;
+					case 'Fade Right Far-out':
+						str += 'fadeRightFar-out';
+						break;
+					case 'Fade Less':
+						str += 'fadeLess';
+						break;
+					case 'Fade Less-out':
+						str += 'fadeLess-out';
+						break;
+					case 'Fade Less Up':
+						str += 'fadeLessUp';
+						break;
+					case 'Fade Less Up-out':
+						str += 'fadeLessUp-out';
+						break;
+					case 'Fade Less Up Far':
+						str += 'fadeLessUpFar';
+						break;
+					case 'Fade Less Up Far-out':
+						str += 'fadeLessUpFar-out';
+						break;
+					case 'Fade Less Down':
+						str += 'fadeLessDown';
+						break;
+					case 'Fade Less Down-out':
+						str += 'fadeLessDown-out';
+						break;
+					case 'Fade Less Down Far':
+						str += 'fadeLessDownFar';
+						break;
+					case 'Fade Less Down Far-out':
+						str += 'fadeLessDownFar-out';
+						break;
+					case 'Fade Less Left':
+						str += 'fadeLessLeft';
+						break;
+					case 'Fade Less Left-out':
+						str += 'fadeLessLeft-out';
+						break;
+					case 'Fade Less Left Far':
+						str += 'fadeLessLeftFar';
+						break;
+					case 'Fade Less Left Far-out':
+						str += 'fadeLessLeftFar-out';
+						break;
+					case 'Fade Less Right':
+						str += 'fadeLessRight';
+						break;
+					case 'Fade Less Right-out':
+						str += 'fadeLessRight-out';
+						break;
+					case 'Fade Less Right Far':
+						str += 'fadeLessRightFar';
+						break;
+					case 'Fade Less Right Far-out':
+						str += 'fadeLessRightFar-out';
+						break;
+					case 'Stretch':
+						str += 'stretch';
+						break;
+					case 'Stretch X':
+						str += 'stretchX';
+						break;
+					case 'Stretch Y':
+						str += 'stretchY';
+						break;
+					case 'Stretch Hard':
+						str += 'stretchHard';
+						break;
+					case 'Stretch X Hard':
+						str += 'stretchXHard';
+						break;
+					case 'Stretch Y Hard':
+						str += 'stretchYHard';
+						break;
+					case 'Squish':
+						str += 'squish';
+						break;
+					case 'Squish X':
+						str += 'squishX';
+						break;
+					case 'Squish Y':
+						str += 'squishY';
+						break;
+					case 'Squish Hard':
+						str += 'squishHard';
+						break;
+					case 'Squish X Hard':
+						str += 'squishXHard';
+						break;
+					case 'Squish Y Hard':
+						str += 'squishYHard';
+						break;
+					case 'Squish Up':
+						str += 'squishUp';
+						break;
+					case 'Squish Up Far':
+						str += 'squishUpFar';
+						break;
+					case 'Squish Down':
+						str += 'squishDown';
+						break;
+					case 'Squish Down Far':
+						str += 'squishDownFar';
+						break;
+					case 'Squish Left':
+						str += 'squishLeft';
+						break;
+					case 'Squish Left Far':
+						str += 'squishLeftFar';
+						break;
+					case 'Squish Right':
+						str += 'squishRight';
+						break;
+					case 'Squish Right Far':
+						str += 'squishRightFar';
+						break;
+					case 'Bounce':
+						str += 'bounce';
+						break;
+					case 'Bounce Up':
+						str += 'bounceUp';
+						break;
+					case 'Bounce Up Far':
+						str += 'bounceUpFar';
+						break;
+					case 'Bounce Down':
+						str += 'bounceDown';
+						break;
+					case 'Bounce Down Far':
+						str += 'bounceDownFar';
+						break;
+					case 'Bounce Left':
+						str += 'bounceLeft';
+						break;
+					case 'Bounce Left Far':
+						str += 'bounceLeftFar';
+						break;
+					case 'Bounce Right':
+						str += 'bounceRight';
+						break;
+					case 'Bounce Right Far':
+						str += 'bounceRightFar';
+						break;
+					case 'Blur':
+						str += 'blur';
+						break;
+					case 'Blur-out':
+						str += 'blur-out';
+						break;
+					case 'Blur Up':
+						str += 'blurUp';
+						break;
+					case 'Blur Up-out':
+						str += 'blurUp-out';
+						break;
+					case 'Blur Down':
+						str += 'blurDown';
+						break;
+					case 'Blur Down-out':
+						str += 'blurDown-out';
+						break;
+					case 'Blur Left':
+						str += 'blurLeft';
+						break;
+					case 'Blur Left-out':
+						str += 'blurLeft-out';
+						break;
+					case 'Blur Right':
+						str += 'blurRight';
+						break;
+					case 'Blur Right-out':
+						str += 'blurRight-out';
+						break;
+					case 'Blur Less':
+						str += 'blurLess';
+						break;
+					case 'Blur Less-out':
+						str += 'blurLess-out';
+						break;
+					case 'Blur Less Up':
+						str += 'blurLessUp';
+						break;
+					case 'Blur Less Up-out':
+						str += 'blurLessUp-out';
+						break;
+					case 'Blur Less Down':
+						str += 'blurLessDown';
+						break;
+					case 'Blur Less Down-out':
+						str += 'blurLessDown-out';
+						break;
+					case 'Blur Less Left':
+						str += 'blurLessLeft';
+						break;
+					case 'Blur Less Left-out':
+						str += 'blurLessLeft-out';
+						break;
+					case 'Blur Less Right':
+						str += 'blurLessRight';
+						break;
+					case 'Blur Less Right-out':
+						str += 'blurLessRight-out';
+						break;
+					case 'Flip Up':
+						str += 'l flipUp';
+						break;
+					case 'Flip Up-out':
+						str += 'l flipUp-out';
+						break;
+					case 'Flip Down':
+						str += 'l flipDown';
+						break;
+					case 'Flip Down-out':
+						str += 'l flipDown-out';
+						break;
+					case 'Flip Left':
+						str += 'l flipLeft';
+						break;
+					case 'Flip Left-out':
+						str += 'l flipLeft-out';
+						break;
+					case 'Flip Right':
+						str += 'l flipRight';
+						break;
+					case 'Flip Right-out':
+						str += 'l flipRight-out';
+						break;
+					case 'Blur Flip Up':
+						str += 'l blurFlipUp';
+						break;
+					case 'Blur Flip Up-out':
+						str += 'l blurFlipUp-out';
+						break;
+					case 'Blur Flip Down':
+						str += 'l blurFlipDown';
+						break;
+					case 'Blur Flip Down-out':
+						str += 'l blurFlipDown-out';
+						break;
+					case 'Blur Flip Left':
+						str += 'l blurFlipLeft';
+						break;
+					case 'Blur Flip Left-out':
+						str += 'l blurFlipLeft-out';
+						break;
+					case 'Blur Flip Right':
+						str += 'l blurFlipRight';
+						break;
+					case 'Blur Flip Right-out':
+						str += 'l blurFlipRight-out';
+						break;
+					case 'AroundTheWorld Up':
+						str += 'l aroundTheWorldUp';
+						break;
+					case 'AroundTheWorld Up-out':
+						str += 'l aroundTheWorldUp-out';
+						break;
+					case 'AroundTheWorld Down':
+						str += 'l aroundTheWorldDown';
+						break;
+					case 'AroundTheWorld Down-out':
+						str += 'l aroundTheWorldDown-out';
+						break;
+					case 'AroundTheWorld Left':
+						str += 'l aroundTheWorldLeft';
+						break;
+					case 'AroundTheWorld Left-out':
+						str += 'l aroundTheWorldLeft-out';
+						break;
+					case 'AroundTheWorld Right':
+						str += 'l aroundTheWorldRight';
+						break;
+					case 'AroundTheWorld Right-out':
+						str += 'l aroundTheWorldRight-out';
+						break;
+					case 'Blur AroundTheWorld Up':
+						str += 'l blurAroundTheWorldUp';
+						break;
+					case 'Blur AroundTheWorld Up-out':
+						str += 'l blurAroundTheWorldUp-out';
+						break;
+					case 'Blur AroundTheWorld Down':
+						str += 'l blurAroundTheWorldDown';
+						break;
+					case 'Blur AroundTheWorld Down-out':
+						str += 'l blurAroundTheWorldDown-out';
+						break;
+					case 'Blur AroundTheWorld Left':
+						str += 'l blurAroundTheWorldLeft';
+						break;
+					case 'Blur AroundTheWorld Left-out':
+						str += 'l blurAroundTheWorldLeft-out';
+						break;
+					case 'Blur AroundTheWorld Right':
+						str += 'l blurAroundTheWorldRight';
+						break;
+					case 'Blur AroundTheWorld Right-out':
+						str += 'l blurAroundTheWorldRight-out';
+						break;
+					case 'Hinged Flip Up':
+						str += 'hingedFlipUp';
+						break;
+					case 'Hinged Flip Up-out':
+						str += 'hingedFlipUp-out';
+						break;
+					case 'Hinged Flip Down':
+						str += 'hingedFlipDown';
+						break;
+					case 'Hinged Flip Down-out':
+						str += 'hingedFlipDown-out';
+						break;
+					case 'Hinged Flip Left':
+						str += 'hingedFlipLeft';
+						break;
+					case 'Hinged Flip Left-out':
+						str += 'hingedFlipLeft-out';
+						break;
+					case 'Hinged Flip Right':
+						str += 'hingedFlipRight';
+						break;
+					case 'Hinged Flip Right-out':
+						str += 'hingedFlipRight-out';
+						break;
+				}
+
+				var div = document.getElementById('inner');
+				div.className = str + ' play';
+			};
+
+			(function() {
+				document.getElementById('buttons').addEventListener('click', function(event) {
+					doIt(event.target);
+				});
+			})();
+		</script>
+	</body>
+</html>
