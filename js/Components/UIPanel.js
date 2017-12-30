@@ -76,7 +76,7 @@ class UIPanel {
 	hideContent(name) {
 		for (let i = 0; i < this._content.length; i++)
 			if (this._content[i].name() === name)
-				this._content[i].hide();
+				return this._content[i].hide();
 	}
 
 	draw(x, y, radius) {

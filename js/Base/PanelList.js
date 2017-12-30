@@ -3,21 +3,20 @@
 class PanelList {
     constructor() {}
 
-    static get(panel, topOffset) {
+    static get(panel, topOffset, bottomOffset) {
     	let id = 0;
     	switch(panel.name()) {
     		case 'M.Overview_P.Info':
     			return [
-	    			new UIContent('M.Overview_P.Info_C.Network', id++, panel.shape(), topOffset
-		        		).add('UISpacer', 		'10px'
+	    			new UIContent('M.Overview_P.Info_C.Network', id++, panel.shape(), topOffset, bottomOffset
+	    				).add('UISpacer', 		10
 		        		).add('UIListItem',
 		        		{
 		        			sourceType: 'Dynamic',
 		        			source: 	'RQ.Network.SSID',
 		        			size: 		'H1'
 		        		}
-		        		).add('UISeparator', 	'bottom'
-		        		).add('UISpacer', 		'5px'
+		        		).add('UISeparator', 	'Bottom'
 		        		).add('UIListItem',
 		        		{
 		        			sourceType: 'Dynamic',
@@ -30,14 +29,13 @@ class PanelList {
 		        			source: 	'RQ.Network.Protocol',
 		        			size: 		'H4'
 		        		}
-		        		).add('UISpacer', 		'20px'
+		        		).add('UISpacer', 		20
 		        		).add('UIStrength',
 		        		{
 		        			source: 	'RQ.Network.Signal',
 		        			segments: 	6
 		        		}
-		        		).add('UISpacer', 		'10px'
-		        		).add('UISeparator', 	'top'
+		        		).add('UISeparator', 	'Top'
 		        		).add('UIListItem',
 		        		{
 		        			sourceType: 'Static',
@@ -50,17 +48,16 @@ class PanelList {
 		        			source: 	'RQ.Network.Mode',
 		        			size: 		'H4'
 		        		}
-		        		).add('UISeparator', 	'bottom'),
+		        		).add('UISeparator', 	'Bottom'),
 
-		        	new UIContent('M.Overview_P.Info_C.System', id++, panel.shape(), topOffset
-		        		).add('UIListItem',
+		        	new UIContent('M.Overview_P.Info_C.System', id++, panel.shape(), topOffset, bottomOffset
+	    				).add('UIListItem',
 		        		{
 		        			sourceType: 'Dynamic',
 		        			source: 	'RQ.System.Version',
 		        			size: 		'H1'
 		        		}
 		        		).add('UISeparator', 	'Bottom'
-		        		).add('UISpacer', 		'10px'
 		        		).add('UIListItem',
 		        		{
 		        			sourceType: 'Static',
@@ -73,8 +70,7 @@ class PanelList {
 		        			source: 	'RQ.System.PrintArea',
 		        			size: 		'H4'
 		        		}
-		        		).add('UISpacer', 		'10px'
-		        		).add('UISeparator', 	'top'
+		        		).add('UISeparator', 	'Top'
 		        		).add('UIListItem',
 		        		{
 		        			sourceType: 'Static',
@@ -106,17 +102,17 @@ class PanelList {
 			            		}
 		            		]
 		            	]
-		            	).add('UISeparator', 	'bottom'),
+		            	).add('UISeparator', 	'Bottom'),
 
-		            new UIContent('M.Overview_P.Info_C.Storage', id++, panel.shape(), topOffset
-			            ).add('UIListItem',
+		            new UIContent('M.Overview_P.Info_C.Storage', id++, panel.shape(), topOffset, bottomOffset
+	    				).add('UIListItem',
 			            {
 			            	sourceType: 'Dynamic',
 			            	source: 	'RQ.Storage.Label',
 			            	size: 		'H1'
 			            }
-			            ).add('UISeparator', 	'bottom'
-			            ).add('UISpacer', 		'25px'
+			            ).add('UISeparator', 	'Bottom'
+			            ).add('UISpacer', 		15
 			            ).add('UIListItem',
 			            {
 			            	sourceType: 'Static',
@@ -129,8 +125,8 @@ class PanelList {
 			            	source: 	'RQ.Storage.FileCount',
 			            	size: 		'H4'
 			            }
-			            ).add('UISpacer', 		'15px'
-			            ).add('UISeparator', 	'top'
+			            ).add('UISpacer', 		15
+			            ).add('UISeparator', 	'Top'
 			            ).add('UIListItem',
 			            {
 			            	sourceType: 'Static',
@@ -143,19 +139,19 @@ class PanelList {
 			            	source: 	'RQ.Storage.FreeSpace',
 			            	size: 		'H4'
 			            }
-			            ).add('UISeparator', 	'bottom')
+			            ).add('UISeparator', 	'Bottom')
 		        ];
     		case 'M.Files_P.FileManager':
     			return [
-    				new UIContent('M.Files_P.FileManager_C.FileManager', id++, panel.shape(), topOffset
-    					).add('UISpacer', 		'10px'
+    				new UIContent('M.Files_P.FileManager_C.FileManager', id++, panel.shape(), topOffset, bottomOffset
+	    				).add('UISpacer', 		20
     					).add('UIWell',
     					{
     						name: 		'FileList',
     						source: 	'RQ.Collection.FileList',
-    						height: 	420
+    						height: 	400
     					}
-    					).add('UISpacer', 		'90px')
+    					).add('UISpacer', 		90)
     			];
     	}
 

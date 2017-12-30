@@ -143,7 +143,7 @@ class ShapeInterface {
 		div.addEventListener("mouseout", 	function() { this.clearHeaderLabel(); }.bind(this));
 		div.addEventListener("click", 		function() { this.handleButtonClick('Menu', 'M.Main'); }.bind(this));
 
-		var animationName = 'bounceInRightHalf',
+		var animationName = 'animFadeInHalfBounceLeftBig',
 			animationEnd  = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
         $('#backButton').addClass(animationName).one(animationEnd, function() { $(this).removeClass(animationName); });
 	}
@@ -152,7 +152,7 @@ class ShapeInterface {
 		if ($('#backButton').length === 0)
 			return;
 
-		var animationName = 'bounceOutLeftHalf',
+		var animationName = 'animFadeOutHalfBounceLeft',
 			animationEnd  = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
         $('#backButton').addClass(animationName).one(animationEnd, function() { $(this).remove(); });
 	}
@@ -227,11 +227,17 @@ class ShapeInterface {
 			for (let j = 0; j < this._panels[i].content().length; j++) {
 				if (this._panels[i].content()[j].name() === contentName) {
 					let showing = this._panels[i].showing();
-					if (showing && showing !== contentName)
-						this._panels[i].hideContent(showing);
+					if (showing !== contentName) {
+						if (showing)
+							var delay = this._panels[i].hideContent(showing) || 0;
 
-					if (showing !== contentName)
-						this._panels[i].showContent(contentName);
+						if (delay)
+							setTimeout(function() { this._panels[i].showContent(contentName); }.bind(this), delay);
+						else
+							this._panels[i].showContent(contentName);
+					}
+
+					return;
 				}
 			}
 		}
@@ -414,7 +420,7 @@ class ShapeInterface {
 				var id = this._panelIdFromShapeId(i);
 				if (typeof id === 'number') {
 					this.hideShapesBehindPanel(id);
-					this._panels[id].shown(PanelList.get(this._panels[id], window.getComputedStyle(this._canvas).top));
+					this._panels[id].shown(PanelList.get(this._panels[id], parseInt(window.getComputedStyle(this._canvas).top), parseInt(window.getComputedStyle(this._canvas).top) + parseInt(window.getComputedStyle(this._canvas).height)));
 				}
 
 				itemShown = true;

@@ -2,12 +2,10 @@
 
 class UIProgress {
 	constructor(source) {
-		this._source	= source;
+		this.element = new UIElement('div', 'UIProgress', 'Dynamic', source);
+
 		this._value 	= 0;
 		this._changed 	= true;
-
-		this._div = document.createElement('div');
-		this._div.setAttribute('class', 'UIProgress');
 	}
 
 	handleMessage(msg, value) {
@@ -25,15 +23,15 @@ class UIProgress {
 	}
 
 	update() {
-		return new UIRequest('Value', this._source, this.handleMessage.bind(this));
+		return new UIRequest('Value', this.element.source(), this.handleMessage.bind(this));
 	}
 
 	render() {
-		clearDiv(this._div);
+		this.element.clear();
 
 		this._changed = false;
 
-		return this._div;
+		return this.element.self();
 	}
 
 	changed() {

@@ -1,12 +1,14 @@
 'use strict';
 
 class UIContent {
-	constructor(name, id, container, topOffset) {
-		this._name 		= name;
-		this._container = container;
-		this._topOffset = parseInt(topOffset);
+	constructor(name, id, container, top, bottom, animationArgs) {
+		this._name 			= name;
+		this._container 	= container;
+		this._top 			= top;
+		this._bottom 		= bottom;
+		this._animationArgs = animationArgs;
 
-		this._trigger 	= {
+		this._trigger = {
 			id: id,
 			x: container.x(),
 			y: container.y(),
@@ -14,14 +16,19 @@ class UIContent {
 			color: container.primaryColor()
 		};
 
-		this._selector 	= '#Content' + this._container.id() + this._trigger.id;
-		this._showing 	= false;
-		this._content 	= [];
+		this._showing 		= false;
+
+		this._prototype 	= [];
+		this._content 		= [];
+		this._contentPos 	= [];
 
 		return this;
 	}
 
 	update() {
+		if (!this._showing)
+			return;
+
 		var req;
 		for (let i = 0; i < this._content.length; i++) {
 			if (this._content[i].update) {
@@ -42,9 +49,12 @@ class UIContent {
 	}
 
 	_messageChildren(message, value) {
+		if (!this._showing)
+			return;
+
 		for (let i = 0; i < this._content.length; i++)
 			if (this._content[i].handleMessage)
-				this._content[i].handleMessage(message, value);
+				this._content[i].handleMessage(message, (Array.isArray(value) ? value[i % value.length] : value));
 	}
 
 	_handleRequest(req) {
@@ -58,102 +68,144 @@ class UIContent {
 	}
 
 	render() {
+		if (!this._showing)
+			return;
+
 		for (let i = 0; i < this._content.length; i++)
 			if (this._content[i].changed && this._content[i].changed())
 				this._content[i].render();
 	}
 
 	show() {
-		var div = document.createElement("div");
+		if (this._showing)
+			return;
 
-		div.id = this._selector.slice(1);
-		div.setAttribute('class', 'UIContent');
+		var mockup = new UIElement('div', 'UIContent'
+			).setStyle('opacity', 	0
+			).setStyle('width', 	(this._container.radius() * 2)
+			).setStyle('height', 	(this._container.radius() * 2));
 
-		div.style.color  	= theme.primaryTextColor;
-		div.style.left 		= (this._container.x() - this._container.radius()) + 'px';
-		div.style.top 		= (this._container.y() - this._container.radius() + this._topOffset) + 'px';
-		div.style.width 	= (this._container.radius() * 2) + 'px';
-		div.style.height 	= (this._container.radius() * 2) + 'px';
+		this.generateContent(emptyArray(this._content));
+		for (let i = 0; i < this._content.length; i++)
+			mockup.append(this._content[i].render());
 
+		document.body.appendChild(mockup.self());
+
+		emptyArray(this._contentPos);
+		for (let i = 0; i < this._content.length; i++) {
+			this._contentPos.push({
+				top: 	this._content[i].element.getStyle('top'),
+				height: this._content[i].element.getStyle('height')
+			});
+		}
+
+		document.body.removeChild(mockup.self());
+
+		let trueTop = this._container.y() - this._container.radius() + this._top;
+		let top = Math.max(0, trueTop);
+		let trueHeight = (this._container.radius() * 2);
+		let height = (top + trueHeight > this._bottom + this._top ? (this._bottom + this._top) - top : (this._container.radius() * 2)); /////////// this._bottom + this._top (top should be footer height)
+		//console.log('trueTop: ' + trueTop + ', top: ' + top + ', trueHeight: ' + trueHeight + ', height: ' + height);
+
+		this.element = new UIElement('div', 'UIContent'
+			).setStyle('color', 	theme.primaryTextColor
+			).setStyle('left', 		this._container.x() - this._container.radius()
+			).setStyle('top', 		top
+			).setStyle('width', 	this._container.radius() * 2
+			).setStyle('height', 	height );
+
+		
+		if (top > trueTop) {
+			for (let i = 0; i < this._contentPos.length; i++) {
+				this._contentPos[i].top += 22;
+				//console.log(this._contentPos[i].top);
+			}
+		}
+
+		for (let i = 0; i < this._content.length; i++) {
+			if (this._content[i].element.autoWidth())
+				this._content[i].element.setStyle('width', this.getAutoWidthAt(this._contentPos[i].top, this._contentPos[i].height));
+
+			this.element.append(this._content[i].render());
+		}
+
+		document.body.appendChild(this.element.self());
 
 		for (let i = 0; i < this._content.length; i++)
-			div.appendChild(this._content[i].render());
+			;//this._content[i].element.createAnimation( { name: 'blur', options: 'xs', delay: ((1.0 - (i / this._content.length)) * 300) }, { }, false );
 
-		document.body.appendChild(div);
+		this.element.createAnimation( { name: 'aroundTheWorldDown', options: 'l' }, { name: 'aroundTheWorldDown-out', options: 'l', endAdjust: -1000 }, true );
 
-		var radius = this._container.goalRadius();
-		$('.autoWidth').each(function(i, j) {
-			let border = 20;
-			let y = $(this).position().top;
+		this._showing = true;
 
-			if ($(j).hasClass('separatorBottom'))
-				y += $(this).height();
-
-			let w = (2 * Math.sqrt((radius * radius) - ((y - radius) * (y - radius)))) - (border * 2);
-			$(j).css('width', w + 'px');
-		});
-
-		var animationName = 'fadeInUp';
-		if (this._trigger.x < this._container.x())
-			animationName += 'Right';
-		else if (this._trigger.x > this._container.x())
-			animationName += 'Left';
-
-		var animationEnd  = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-		$(this._selector).addClass(animationName).one(animationEnd, function() {
-            $(this._selector).removeClass(animationName);
-            this._messageChildren('Shown', $(this._selector).offset());
-        }.bind(this));
-
-        this._showing = true;
+		this._messageChildren('Shown', this._contentPos);
 	}
 
 	hide() {
-		var animationEnd  = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-		var animationName = 'fadeOutDown';
-		if (this._trigger.x < this._container.x())
-			animationName += 'Left';
-		else if (this._trigger.x > this._container.x())
-			animationName += 'Right';
+		if (!this._showing)
+			return;
 
 		this._showing = false;
-        $(this._selector).addClass(animationName).one(animationEnd, function() {
-            $(this).remove();
-        });
+
+		let max = 0;
+		for (let i = 0; i < this._content.length; i++)
+			max = Math.max(max, this._content[i].element.playAnimation());
+
+		return Math.max(max, this.element.playAnimation());
+	}
+
+	getAutoWidthAt(top, height = 0, border = 20) {
+		let radius 	= this._container.goalRadius();
+		//let y 		= Math.max(Math.abs(top - radius), Math.abs((top + height) - radius));
+		let y 			= Math.abs(top + (height / 2) - radius);
+			
+		return (Math.sqrt(radius * radius - y * y) - border) * 2;
 	}
 
 	add(type, data) {
-		var element;
-		switch (type) {
-			case 'UISpacer':
-				element = new UISpacer(data);
-				break;
-			case 'UISeparator':
-				element = new UISeparator(data);
-				break;
-			case 'UIListItem':
-				element = new UIListItem(data.sourceType, data.source, data.size);
-				break;
-			case 'UISplit':
-				element = new UISplit(data);
-				break;
-			case 'UIStrength':
-				element = new UIStrength(data.source, data.segments);
-				break;
-			case 'UIWell':
-				element = new UIWell(data.name, data.source, data.height, this._container.radius(), data.border, data.lineWidth);
-				break;
-			default:
-				break;
-		}
-
-		if (element)
-			this._content.push(element);
+		this._prototype.push({ type: type, data: data });
 
 		return this;
 	}
 
+	generateContent(contentArray) {
+		for (let i = 0; i < this._prototype.length; i++) {
+			var element,
+				data = this._prototype[i].data;
+
+			switch (this._prototype[i].type) {
+				case 'UISpacer':
+					element = new UISpacer(data);
+					break;
+				case 'UISeparator':
+					element = new UISeparator(data);
+					break;
+				case 'UIListItem':
+					element = new UIListItem(data.sourceType, data.source, data.size);
+					break;
+				case 'UISplit':
+					element = new UISplit(data);
+					break;
+				case 'UIStrength':
+					element = new UIStrength(data.source, data.segments);
+					break;
+				case 'UIWell':
+					element = new UIWell(data.name, data.source, data.height, this._container.radius(), data.border, data.lineWidth);
+					break;
+				default:
+					break;
+			}
+
+			if (element)
+				contentArray.push(element);
+		}
+	}
+
 	delete() {
+		emptyArray(this._prototype);
+		emptyArray(this._content);
+		emptyArray(this._contentPos);
+
 		this.hide();
 	}
 

@@ -2,14 +2,11 @@
 
 class UISpacer {
 	constructor(value) {
-		this._value = value;
-		this._div 	= document.createElement('div');
-
-		this._div.style.height = this._value;
+		this.element = new UIElement('div', 'UISpacer').setStyle('height', value);
 	}
 
 	render() {
-		return this._div;
+		return this.element.self();
 	}
 
 	changed() {

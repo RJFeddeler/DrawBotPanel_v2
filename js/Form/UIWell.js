@@ -2,16 +2,15 @@
 
 class UIWell {
 	constructor(name, source, height, radius, border = 20, lineWidth = 3) {
-		this._selector 		= '#UIWell_' + name;
-		this._source 		= source;
 		this._ready 		= false;
 		this._changed 		= true;
 
-		this._top 			= 0;
-		this._height 		= height;
 		this._radius 		= radius;
 		this._border 		= border;
 		this._lineWidth 	= lineWidth;
+
+		this._height 		= height;
+		this._top 			= 0;
 
 		this._canvas = document.createElement('canvas');
 
@@ -21,18 +20,16 @@ class UIWell {
 		if (!this._ctx)
 			return;
 
-		this._canvas.width 	= this._radius * 2;
-		this._canvas.height = this._height + (this._lineWidth * 2);
+		this._canvas.width 	= radius * 2;
+		this._canvas.height = height + (lineWidth * 2);
+
 		this._canvas.style.zIndex = 15;
 
-		this._div = document.createElement('div');
-		this._div.setAttribute('class', 'UIWell');
-		this._div.id = this._selector.slice(1);
-
-		this._div.style.width 	= (this._radius * 2) + 'px';
-		this._div.style.height 	= this._height + 'px';
-
-		this._div.appendChild(this._canvas);
+		this.element = new UIElement('div', 'UIWell', 'Dynamic', source
+			).setStyle('top', 		0
+			).setStyle('width', 	radius * 2
+			).setStyle('height', 	height
+			).append(this._canvas);
 	}
 
 	handleMessage(msg, value) {
@@ -40,23 +37,23 @@ class UIWell {
 			case 'Update':
 				break;
 			case 'Shown':
-				this._top = $(this._selector).position().top;
-				this._ready = true;
+				if (value.top !== undefined && !isNaN(parseInt(value.top))) {
+					this._top = parseInt(value.top);
+					this._ready = true;
+				}
+
 				break;
 		}
 	}
 
 	update() {
 		if (this._ready)
-			return new UIRequest('Collection', this._source, this.handleMessage.bind(this));
+			return new UIRequest('Collection', this.element.source(), this.handleMessage.bind(this));
 	}
 
-	render(container) {
-		if (!this._ready)
-			return this._div;
-
-		if (this._height < 5 || this._radius < 5 || this._radius < (this._border * 2))
-			return this._div;
+	render() {
+		if (!this._ready || this._height < 5 || this._radius < 5 || this._radius < (this._border * 2))
+			return this.element.self();
 
 		let hyp = this._radius - this._border;
 
@@ -69,7 +66,7 @@ class UIWell {
 		let pTR  = { x: topX + this._radius, 	y: 0,				rad: atan2ToArc(Math.atan2(topY,  topX)) };
 		let pBR  = { x: botX + this._radius, 	y: this._height, 	rad: atan2ToArc(Math.atan2(botY,  botX)) };
 
-		let pTL  = { x: this._radius - topX,	y: this._lineWidth,	rad: atan2ToArc(Math.atan2(topY, -topX)) };
+		let pTL  = { x: this._radius - topX,	y: 0,				rad: atan2ToArc(Math.atan2(topY, -topX)) };
 		let pBL  = { x: this._radius - botX, 	y: this._height, 	rad: atan2ToArc(Math.atan2(botY, -botX)) };
 
 		this._ctx.save();
@@ -104,9 +101,20 @@ class UIWell {
 
 		this._ctx.restore();
 
+		if (!this._receptacle) {
+			this._receptacle = new UIReceptacle(this._lineWidth * 2, pTL.x + this._lineWidth, Math.min(pTR.x - pTL.x, pBR.x - pBL.x), this._height - (this._lineWidth * 2));
+
+			for (let i = 0; i < 30; i++)
+				this._receptacle.addItem(new UIFile('Drawing' + i + '.rob', '2018_01_01', 32, 'Drawing1.png'));
+
+			this.element.append(this._receptacle.render());
+		}
+		else
+			this._receptacle.verifyPosition(this._lineWidth * 2, pTL.x + this._lineWidth, Math.min(pTR.x - pTL.x, pBR.x - pBL.x), this._height - (this._lineWidth * 2));
+
 		this._changed = false;
 
-		return this._div;
+		return this.element.self();
 	}
 
 	changed() {
