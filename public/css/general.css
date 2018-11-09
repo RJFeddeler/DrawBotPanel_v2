@@ -1,0 +1,855 @@
+body {
+	height: 100vh;
+	background: #222222;
+
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: space-between;
+}
+
+.flexBar {
+	z-index: 50;
+	height: 50px;
+
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#UIMainCanvas {
+	z-index: 5;
+	width: 100%;
+}
+
+#UIHeader {
+	background-color: #0288d1;
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79);
+}
+
+#UIHeader div {
+	height: 100%;
+}
+
+#UIHeader > div:nth-of-type(1) {
+	position: relative;
+	width: 25%; height: 100%;
+	margin-top: 2px;
+	margin-left: 5px;
+}
+
+.UIBackButton i {
+	font-size: 41px;
+	color: #222222;
+	opacity: 0.6;
+}
+.UIBackButton i:hover {
+	width: 100%; height: 100%;
+	opacity: 1;
+}
+
+.UIStopButton {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	align-items: center;
+}
+
+.UIStopButton i {
+	font-size: 30px;
+	color: red;
+	opacity: 0.8;
+}
+.UIStopButton i:hover {
+	opacity: 1;
+}
+
+#UIHeader > div:nth-of-type(2) {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: center;
+	width: 50%;
+
+	align-items: center;
+	text-align: center;
+}
+
+#UIHeader > div:nth-of-type(3) {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-end;
+	align-items: center;
+	width: 25%; height: 100%;
+
+	margin-right: 20px;
+
+	text-align: center;
+	color: #ffffff;
+	font-size: 1.5em;
+}
+
+#UIHeaderCaption {
+	position: relative;
+	top: 5px;
+
+	font-size: 1.5em;
+	color: #ffffff;
+	text-align: center;
+	background-color: transparent;
+
+	-webkit-transition: opacity 0.4s, 	-webkit-transform 0.4s;
+		-ms-transition: opacity 0.4s, 		-ms-transform 0.4s;
+			transition: opacity 0.4s, 			transform 0.4s;
+}
+
+.headerCaptionHidden {
+	opacity: 0.0;
+	-webkit-transform: translate(0px, -20px);
+		-ms-transform: translate(0px, -20px);
+			transform: translate(0px, -20px);
+}
+
+.headerCaptionShown {
+	opacity: 0.7;
+	-webkit-transform: translate(0px, 0px);
+		-ms-transform: translate(0px, 0px);
+			transform: translate(0px, 0px);
+}
+
+#UIFooter {
+	background-color: rgba(2, 136, 209, 1.0);
+	box-shadow: 0 -4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79);
+}
+
+.DialogOverlay {
+	z-index: 999;
+
+	width: 100%; height: 100%;
+
+	position: fixed;
+	top: 0; left: 0;
+
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.DialogBox {
+	height: 200px;
+	overflow: hidden;
+
+	display: flex;
+	flex-flow: row nowrap;
+
+	justify-content: center;
+	align-items: flex-start;
+
+	opacity: 0;
+	transform: translateY(200px) scale(0.1, 0.1);
+
+	transition: opacity 0.6s, transform 0.8s;
+}
+
+.DialogBox #dialogButtons {
+	position: fixed;
+	bottom: 0;
+	width: 700px;
+	height: 40px;
+	text-align: right;
+}
+
+.DialogBox #dialogButtons i {
+	margin: 0 10px 10px 10px;
+
+	color: white;
+	font-size: 2em;
+}
+
+.DialogBox #dialogButtons i:last-of-type {
+	margin-right: 100px;
+}
+
+.DialogBox #dialogButtons i:last-of-type:hover {
+	color: #00B233;
+}
+
+.DialogBox #dialogButtons i:first-of-type:hover {
+	color: red;
+}
+
+.DialogBox.showing {
+	opacity: 1;
+	transform: none;
+}
+
+.DialogBox > div {
+	width: 700px; height: 700px;
+
+	border-radius: 100%;
+
+	background-color: #222222;
+	box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.8), 0 6px 24px 0 rgba(0, 0, 0, 0.79);
+}
+
+.DialogBox > div p:first-of-type {
+	margin-top: 20px;
+
+	text-align: center;
+	color: #0288d1;
+	font-size: 2.0em;
+}
+
+.DialogBox > div #dialogYesNoQuestion {
+	text-align: center;
+	color: white;
+	font-size: 1.1em;
+}
+
+.DialogBox > div div {
+	width: 30%;
+	margin: auto;
+}
+
+.DialogBox > div label {
+	color: #aaa;
+}
+
+.DialogBox .input-field input[type=text] {
+	color: #0288d1;
+}
+
+.DialogBox .input-field input[type=text]:focus {
+	color: white;
+	border-bottom: 1px solid #0288d1;
+	box-shadow: 0 1px 0 0 #0288d1;
+}
+
+.DialogBox .input-field input[type=text]:focus + label {
+	color: #0288d1;
+}
+
+.UIPanel {
+	position: absolute;
+}
+
+.UIButton,
+.UILightButton {
+	z-index: 40;
+	position: absolute;
+
+	opacity: 0.6;
+	color: white;
+	text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+
+	transition: opacity 0.5s, text-shadow 0.14s, transform 0.14s;
+}
+
+.UILightButton {
+	position: static;
+}
+
+.UIButton i,
+.UILightButton i {
+	opacity: 0.7;
+	font-size: 2.2em;
+
+	transition: all 0.3s;
+}
+
+.UILightButton i {
+	color: white;
+}
+
+.UIButton:not(.UIButtonClick):hover i,
+.UILightButton:not(.UIButtonClick):hover i {
+	opacity: 1.0;
+	text-shadow: 5px 5px 4px rgba(0, 0, 0, 0.4);
+
+	transform: 	translate(-1px, -2px);
+}
+
+.UIButtonClick {
+	text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.0);
+
+	transform: 	translate(1px, 2px);
+}
+
+.hiddenFileInput {
+	display: none;
+	position: absolute;
+	
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	
+	width: 100%;
+	height:100%;
+}
+
+.UIContent {
+	z-index: 30;
+	position: absolute;
+	margin: 0; padding: 0;
+	width: 100%; height: 100%;
+
+	overflow: hidden;
+	overflow-x: visible;
+
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+}
+
+.UISplit			{ display: flex; justify-content: center; align-items: center;}
+.UISplit div		{ display: flex; justify-content: center; align-items: center; margin: 5px; }
+
+.UISubmitButton 				{ font-size: 20px; 			}
+.UISubmitButton button 			{ background-color: white; 	}
+.UISubmitButton .btn-floating	{ background-color: white;	}
+.UISubmitButton .btn-floating i { color: #0288d1; 			}
+
+.UIStrength 		{ display: flex; justify-content: center; flex-wrap: nowrap; align-items: flex-end; }
+.UIStrength div 	{ margin: 0 1px 0 1px; border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 1px; background-color: rgba(255, 255, 255, 0.6); }
+.UIStrength .Dim 	{ opacity: 0.2; }
+
+.UIBinaryPicker		{ position: relative; width: 100%; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; margin-bottom: 15px; }
+.UIBinaryPicker_Header { border-bottom: 1px solid white; margin-bottom: 8px; padding-left: 8px; padding-right: 8px; color: white; }
+.UIBinaryPicker_Option { display: inline; width: 50%; margin-left: 5px; margin-right: 5px; padding-top: 3px; padding-bottom: 3px; padding-left: 6px; padding-right: 6px; border-style: none; color: rgba(255, 255, 255, 0.6); }
+.UIBinaryPicker_Option.picked { border-style: solid; border-width: 1px; border-radius: 5px; color: white; }
+
+.UIMultiPicker		{ position: relative; width: 100%; display: flex; flex-flow: column nowrap; justify-content: center; align-items: center; margin-bottom: 15px; }
+.UIMultiPicker_Header { border-bottom: 1px solid white; margin-bottom: 8px; padding-left: 8px; padding-right: 8px; color: white; }
+.UIMultiPicker_Option { display: inline; width: 50%; margin-left: 5px; margin-right: 5px; padding-top: 3px; padding-bottom: 3px; padding-left: 6px; padding-right: 6px; border-style: none; color: rgba(255, 255, 255, 0.6); }
+.UIMultiPicker_Option.picked { border-style: solid; border-width: 1px; border-radius: 5px; color: white; }
+
+.UISlidePicker {
+	width: 100px;
+	margin: 20px 10px 20px 10px;
+}
+
+.UISlidePicker_Label {
+	position: relative;
+	text-align: center;
+	width: 100%;
+	top: -32px;
+	padding-left: 15px;
+
+	color: white;
+}
+
+.noUi-tooltip {
+    display: none;
+}
+
+.noUi-active .noUi-tooltip {
+    display: block;
+}
+
+.noUi-target {
+	height: 5px;
+	box-shadow: none;
+	padding-right: 15px;
+	background-color: #222222;
+	border: none;
+}
+
+.noUi-handle {
+	width: 15px !important;
+	height: 15px !important;
+	border-radius: 15px !important;
+	border: 2px solid #0288d1;
+	box-shadow: none;
+}
+
+.noUi-connect {
+	background-color: white;
+}
+
+html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
+  right: -15px !important;
+  left: auto;
+}
+
+.noUi-handle:before,
+.noUi-handle:after {
+	display: none !important;
+}
+
+.UIToggle label {
+	color: white;
+}
+
+.switch .lever,
+.switch label input[type=checkbox]:checked+.lever {
+	background-color: rgba(0,0,0,0.38);
+}
+
+.switch label .lever:after {
+	background-color: #222;
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+	background-color: white;
+}
+
+.UINumberBox { display: inline; width: 20%; color: white; }
+
+.UINumberBox input { color: white; }
+/* label color */
+.UINumberBox.input-field label {
+	color: white;
+}
+/* label focus color */
+.UINumberBox.input-field input[type=text]:focus + label {
+	color: white;
+}
+/* label underline focus color */
+.UINumberBox.input-field input[type=text]:focus {
+	border-bottom: 1px solid white;
+	box-shadow: 0 1px 0 0 white;
+}
+.UINumberBox input[type=number]:focus {
+	border-bottom: 1px solid white;
+	box-shadow: 0 1px 0 0 white;
+}
+/* valid color */
+.UINumberBox.input-field input[type=text].valid {
+	border-bottom: 1px solid white;
+	box-shadow: 0 1px 0 0 white;
+}
+/* invalid color */
+.UINumberBox.input-field input[type=text].invalid {
+	border-bottom: 1px solid white;
+	box-shadow: 0 1px 0 0 white;
+}
+/* icon prefix focus color */
+.UINumberBox.input-field .prefix.active {
+	color: white;
+}
+
+.Font_H1 			{ font-size: 1.5em; }
+.Font_H2 			{ font-size: 1.3em; }
+.Font_H3 			{ font-size: 1.2em; }
+.Font_H4 			{ font-size: 1.0em; }
+.Font_H5 			{ font-size: 0.8em; }
+.Font_H6 			{ font-size: 0.6em; }
+
+.UIListItemH1 		{ font-size: 1.5em; color: white; padding-left: 6px; padding-right: 6px; }
+.UIListItemH2 		{ font-size: 1.3em; color: white; padding-left: 6px; padding-right: 6px; }
+.UIListItemH3		{ font-size: 1.2em; color: white; padding-left: 6px; padding-right: 6px; }
+.UIListItemH4 		{ font-size: 1.0em; color: white; padding-left: 6px; padding-right: 6px; }
+
+.underline 			{ border-bottom: 1px solid white; }
+
+.UICanvas canvas {
+	border-radius: 5px;
+	border: 2px solid white;
+}
+
+.UIContainer {
+	display: flex;
+	flex-flow: row wrap;
+
+	justify-content: center;
+	align-items: center;
+	align-content: flex-start;
+}
+
+.UIFile {
+	text-align: center;
+	font-size: 40px;
+
+	border-radius: 58px;
+	border: 1px solid rgba(34, 34, 34, 0.0);
+}
+
+.UIFile:hover {
+	border-color: rgba(34, 34, 34, 0.2);
+	background-color: rgba(34, 34, 34, 0.1);
+}
+
+.UIFile a {
+	color: white;
+
+	height: 100%;
+
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+}
+
+.UIFile_Text {
+	margin: 0; padding: 0;
+	margin-top: 10px;
+
+	font-size: 14px;
+}
+
+.UIFileContextMenu {
+	width: 100%;
+
+	display: none;
+	flex-flow: column nowrap;
+	justify-content: center;
+	align-items: center;
+
+	position: relative;
+	top: -18px; left: 0;
+
+	border-radius: 7px;
+	border: 2px solid #222222;
+	background-color: rgba(255, 255, 255, 0.9);
+}
+
+.UIFileContextMenu.active {
+	display: flex;
+}
+
+.UIFileContextMenu p {
+	margin: 0;
+	padding: 2px 0 2px 0;
+
+	width: 100%;
+
+	border-bottom: 1px solid black;
+
+	font-size: 0.3em;
+	font-weight: bold;
+}
+
+.UIFileContextMenu p:first-of-type {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+}
+
+.UIFileContextMenu p:last-of-type {
+	border: none;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.UIFileContextMenu p:hover {
+	background-color: rgba(172, 172, 172, 0.9);
+}
+
+.UISVGPreview {
+	width: 75%; height: 80%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.UISVGPreview_SVG {
+}
+
+.UISVGPreview_SVG svg {
+	width: 300px; height: 200px;
+}
+
+.UISVGPreview_Header {
+	margin-top: 10px;
+	margin-bottom: 5px;
+
+	color: white;
+	font-size: 1.2em;
+
+	text-align: center;
+}
+
+.UISVGPreview_Info {
+	width: 100%;
+
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: flex-start;
+	align-items: flex-start;
+
+	font-size: 0.8em;
+}
+
+.UISVGPreview_Info ul {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.UISVGPreview_Info li {
+	margin: 5px 0 5px 0;
+	background-color: rgba(34, 34, 34, 0.8);
+}
+
+.UISVGPreview_Info ul:nth-of-type(1) li,
+.UISVGPreview_Info ul:nth-of-type(3) li {
+	margin-left: 6px;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
+	box-shadow: inset 3px 3px 5px #222222;
+}
+
+.UISVGPreview_Info ul:nth-of-type(2) li,
+.UISVGPreview_Info ul:nth-of-type(4) li {
+	margin-right: 6px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+	box-shadow: inset -1px 3px 5px #222222;
+}
+
+.UISVGPreview_Info ul:nth-of-type(1),
+.UISVGPreview_Info ul:nth-of-type(3) {
+	text-align: right;
+	color: #0288d1;
+}
+
+.UISVGPreview_Info ul:nth-of-type(2),
+.UISVGPreview_Info ul:nth-of-type(4) {
+	text-align: center;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+.UISVGPreview_Info ul:nth-of-type(1) {
+	width: 18%;
+	margin-left: 10px;
+}
+
+.UISVGPreview_Info ul:nth-of-type(2) {
+	width: 32%;
+}
+
+.UISVGPreview_Info ul:nth-of-type(3) {
+	width: 22%;
+}
+
+.UISVGPreview_Info ul:nth-of-type(4) {
+	width: 28%;
+	margin-right: 10px;
+}
+
+.UISVGPreview_Time {
+	margin-top: 2px;
+
+	color: rgba(255, 255, 255, 0.9);
+	font-size: 0.8em;
+}
+
+.UISVGPreview_Start {
+	color: rgba(255, 255, 255, 0.8);
+	font-size: 1.4em;
+}
+
+.UISVGPreview_Start:hover {
+	color: white;
+}
+
+.UIListItemMatrix {
+	width: 100%;
+
+	display: 			flex;
+	flex-flow: 			row nowrap;
+	justify-content: 	center;
+	align-items: 		flex-start;
+}
+
+.UIListItemMatrix div {
+	margin: 0 10px;
+	text-align: center;
+}
+
+.UISeparator {
+	height: 30px;
+
+	display: 			flex;
+	flex-flow: 			row nowrap;
+	justify-content: 	center;
+}
+
+.UISeparatorTop {
+	height: 50%; width: 100%;
+
+	align-self: flex-end;
+
+	border-radius: 15px;
+	border-top: 1px solid white;
+}
+
+.UISeparatorBottom {
+	height: 50%; width: 100%;
+	
+	align-self: flex-start;
+
+	border-radius: 15px;
+	border-bottom: 1px solid white;
+}
+
+.UISpacer {
+	width: 1px;
+}
+
+#SocketInterface,
+#svgBody {
+	margin: 0;
+	width: 100%; height: 100%;
+	display: flex;
+	flex-flow: column nowrap;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+#socketIcon {
+	position: absolute;
+	top: 120px; left: 10px;
+}
+
+#socketIcon i {
+	color: rgba(200, 200, 220, 0.2);
+	font-size: 140px;
+}
+
+#socketCancel {
+	position: absolute;
+	top: 140px; right: 10px;
+}
+
+#socketCancel i {
+	color: #e53935;
+	font-size: 100px;
+}
+
+#socketCancel.hidden {
+	display: none;
+}
+
+#socketMenu,
+#svgMenu {
+	margin: 20px;
+	width: 100%; height: 50px;
+
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-around;
+	align-items: center
+}
+
+#socketMenu a,
+#svgMenu a {
+	margin: 10px;
+}
+
+#socketForm,
+#svgForm {
+	width: 75%;
+}
+
+#socketForm div form,
+#svgMenu div form {
+	display: flex;
+	flex-flow: row nowrap;
+	justify-content: space-around;
+	align-items: center;
+}
+
+#effector_slider {
+	width: 40%;
+}
+
+.dropdown-content {
+	background-color: rgba(34, 34, 34, 0);
+	box-shadow: none;
+}
+
+.dropdown-content a {
+	border-radius: 20px;
+	background-color: #0288d1;
+}
+
+.dropdown-content li {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.dropdown-content li:hover {
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.dropdown-content li>a {
+	color: #d0d0d0;
+}
+
+.dropdown-content a:hover {
+	background-color: #29b6f6;
+	color: white;
+}
+
+#socketOutput,
+#svgOutput {
+	margin-top: 20px;
+	padding: 10px;
+	width: 70%; height: 60%;
+
+	border-radius: 10px;
+
+	overflow-x: hidden;
+	overflow-y: auto;
+
+	background-color: rgba(2, 136, 209, 0.3);
+	color: #d0d0d0;
+}
+
+.formHidden,
+.tabHidden {
+	display: none;
+}
+
+[type="radio"]:checked + span:before {
+	border: 2px solid #d0d0d0 !important;
+}
+
+[type="radio"]:checked + span:after {
+	border: 1px solid #0288d1 !important;
+}
+
+[type="radio"].with-gap:checked + span:after {
+	background-color: #0288d1 !important;
+}
+
+#socketForm .input-field input[type=text],
+#socketForm .input-field input[type=number] {
+	color: #d0d0d0;
+}
+
+#socketForm .input-field input[type=text]:focus,
+#socketForm .input-field input[type=number]:focus {
+	color: white;
+}
+
+#socketForm .input-field label {
+	color: #0288d1;
+}
+
+#socketForm .input-field input[type=text]:focus + label,
+#socketForm .input-field input[type=number]:focus + label {
+	color: #0288d1 !important;
+}
+
+#socketForm .input-field input[type=text]:focus,
+#socketForm .input-field input[type=number]:focus {
+	border-bottom: 1px solid #0288d1 !important;
+	box-shadow: 0 1px 0 0 #0288d1 !important;
+}
+
+.btn {
+	background-color: #0288d1;
+}
+
+.btn:hover {
+	background-color: #29b6f6;
+}
+
+input[type=text].valid {
+	border-bottom: #0288d1 !important;
+	box-shadow: 0 1px 0 0 #0288d1 !important;
+	color: white !important;
+	padding-left: 15px;
+}

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="11in"
+   height="8.5in"
+   viewBox="0 0 279.40001 215.9"
+   id="svg4258"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="wiresphere.svg">
+  <sodipodi:namedview
+     inkscape:document-units="in"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.85359477"
+     inkscape:cx="493.82848"
+     inkscape:cy="382.5"
+     inkscape:current-layer="layer1"
+     id="namedview4262"
+     showgrid="false"
+     inkscape:window-width="1436"
+     inkscape:window-height="855"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1"
+     units="in" />
+  <defs
+     id="defs4260" />
+  <metadata
+     id="metadata4264">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,5.9000033)">
+    <g
+       transform="matrix(0.80669983,0,0,0.80669983,139.70001,102.05)"
+       inkscape:label="WireframeSphere"
+       id="g11622">
+      <g
+         inkscape:label="Lines of Longitude"
+         id="g11624">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.34984785"
+           transform="matrix(0.99676669,0.08035027,-0.08035027,0.99676669,0,0)"
+           sodipodi:cx="0"
+           sodipodi:cy="0"
+           sodipodi:end="4.712389"
+           sodipodi:open="true"
+           sodipodi:rx="12.870777"
+           sodipodi:ry="112.88889"
+           sodipodi:start="1.5707963"
+           sodipodi:type="arc"
+           id="path11626"
+           d="M 3.4487114e-7,112.88889 A 12.870777,112.88889 0 0 1 -11.14642,56.444448 a 12.870777,112.88889 0 0 1 0,-112.888895 A 12.870777,112.88889 0 0 1 2.5246428e-7,-112.88889" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.34984785"
+           transform="matrix(0.99979947,0.02002571,-0.02002571,0.99979947,0,0)"
+           sodipodi:cx="0"
+           sodipodi:cy="0"
+           sodipodi:end="4.712389"
+           sodipodi:open="true"
+           sodipodi:rx="3.228267"
+           sodipodi:ry="112.88889"
+           sodipodi:start="1.5707963"
+           sodipodi:type="arc"
+           id="path11684"
+           d="M 8.6501079e-8,112.88889 A 3.228267,112.88889 0 0 1 -2.7957612,56.444448 a 3.228267,112.88889 0 0 1 0,-112.888895 A 3.228267,112.88889 0 0 1 6.3323457e-8,-112.88889" />
+      </g>
+      <g
+         inkscape:label="Lines of Latitude"
+         id="g11686">
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.34984785"
+           sodipodi:cx="0"
+           sodipodi:cy="75.368248"
+           sodipodi:end="1.7446262"
+           sodipodi:open="true"
+           sodipodi:rx="65.410202"
+           sodipodi:ry="37.518753"
+           sodipodi:start="1.3969664"
+           sodipodi:type="arc"
+           id="path11688"
+           d="m 11.313075,112.32158 a 65.410202,37.518753 0 0 1 -22.626146,0" />
+        <path
+           style="fill:none;stroke:#000000;stroke-width:0.34984785"
+           sodipodi:cx="0"
+           sodipodi:cy="-75.368248"
+           sodipodi:end="4.5385591"
+           sodipodi:open="true"
+           sodipodi:rx="65.410202"
+           sodipodi:ry="37.518753"
+           sodipodi:start="4.8862189"
+           sodipodi:type="arc"
+           id="path11762"
+           d="M 11.313074,-112.32158 A 65.410202,37.518753 0 0 1 65.163296,-72.111411 65.410202,37.518753 0 0 1 -1.2830414e-6,-37.849495 65.410202,37.518753 0 0 1 -65.163296,-72.111412 65.410202,37.518753 0 0 1 -11.313072,-112.32158" />
+        <ellipse
+           style="fill:none;stroke:#000000;stroke-width:0.34984785"
+           id="path11784"
+           cx="0"
+           cy="-92.350555"
+           rx="5.8113794"
+           ry="3.3342702" />
+      </g>
+      <circle
+         style="fill:none;stroke:#000000;stroke-width:0.34984785"
+         id="path11786"
+         cx="0"
+         cy="0"
+         r="112.88889" />
+    </g>
+  </g>
+</svg>
