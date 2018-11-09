@@ -1,2 +1,2 @@
-# DrawBotPanel
-DrawBot Control Panel is a website served by the ESP8266 WiFi module used as a web server on a drawing robot that I designed.
+# PlotBotPanel
+PlotBot Control Panel is a web interface served by the Raspberry Pi SBC for a two arm pen plotter.
