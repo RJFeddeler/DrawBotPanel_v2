@@ -21,7 +21,7 @@ class UIContainer {
 		this._items = [];
 		this._ready = false;
 
-		this._testFiles = [ '7SegPCB.rob', 'AppoloniusGasket.rob', 'Arrowhead.rob', 'CarsonStipple.rob', 'Declaration.rob', 'GosperCurve.rob', 'HappyBirthday.rob', 'LoremIpsum.rob', 'Signatures.rob', 'SquiggleGrace.rob', 'TextTest.rob', 'WeddingInvite.rob', 'WireSphere.rob', 'Woolf.rob', 'zCalibration.rob' ];
+		this._testFiles = [ 'AppoloniusGasket.rob', 'Arrowhead.rob', 'CarsonStipple.rob', 'Declaration.rob', 'GosperCurve.rob', 'HappyBirthday.rob', 'SquiggleGrace.rob', 'WeddingInvite.rob', 'WireSphere.rob', 'Woolf.rob' ];
 		this._testFiles.sort(function(a, b) { if (b.fileName < a.fileName) return 1; else return -1; });
 
 		for (let i = 0; i < this._testFiles.length; i++)
