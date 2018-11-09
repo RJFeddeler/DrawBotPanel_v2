@@ -1,121 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
+    <head>
 		<meta charset="utf-8">
-		<meta name="viewport"		content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+		<meta name="viewport"   content="width=device-width, initial-scale=1.0, user-scalable=0, shrink-to-fit=no" />
 
-		<meta property="og:type"	content="website" />
-		<meta property="og:title"	content="DrawBot Control Panel" />
-		<meta property="og:description"	content="Web interface for a CNC style drawing robot (DrawBot) created by Robert Feddeler" />
-		<meta property="og:image"	content="http://www.robertfeddeler.com/images/mainMenu.png" />
-		<meta property="og:url"		content="http://www.robertfeddeler.com/index.html" />
+		<meta property="og:type"  content="website" />
+		<meta property="og:title" content="DrawBot Control Panel" />
+		<meta property="og:description" content="Web interface for a CNC style Pen Plotter created by Robert Feddeler" />
+		<meta property="og:image" content="http://www.robertfeddeler.com/public/images/mainMenu.png" />
+		<meta property="og:url"   content="http://www.robertfeddeler.com/index.html" />
 
 		<title>DrawBot Control Panel</title>
 
-		<!-- 3rd Party Style Sheets -->
+		<!-- 3rd Party Style Sheets (CDN) -->
 		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
-			integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
-			crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css"
 			integrity="sha256-HxaKz5E/eBbvhGMNwhWRPrAR9i/lG1JeT4mD6hCQ7s4="
 			crossorigin="anonymous" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
-			integrity="sha256-e22BQKCF7bb/h/4MFJ1a4lTRR2OuAe8Hxa/3tgU5Taw="
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css" 
+			integrity="sha256-tKn8A2U9uuN5rPr3gh4A9FYMJkarrzLVyks7aS/ZfBU=" 
 			crossorigin="anonymous" />
 
+		<!-- 3rd Party Style Sheets (Local) -->
+		<link rel="stylesheet" type="text/css" href="public/css/nouislider.css" />
+
 		<!-- My Style Sheets -->
-		<link type="text/css" rel="stylesheet" href="css/general.css" />
-		<link type="text/css" rel="stylesheet" href="css/animation.css" />
+		<link rel="stylesheet" type="text/css" href="public/css/general.css" />
+		<link rel="stylesheet" type="text/css" href="public/css/animation.css" />
+
+		<!-- Font Awesome 5 -->
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" 
+			integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" 
+			crossorigin="anonymous">
+
 	</head>
 
 	<body>
 		<!-- Header -->
-		<div class="f-box" id="idHeader">
-			<div class="f-text"></div>
-			<div class="f-text headerText headerTextHidden" id="headerLabel"></div>
-			<div class="f-text"></div>
+		<div id="UIHeader" class="flexBar">
+			<div id="UIHeaderL"></div>
+			<div id="UIHeaderM"></div>
+			<div id="UIHeaderR"></div>
 		</div>
 
 		<!-- Body -->
-		<div id="idContent" class="trim"></div>
+		<canvas id="UIMainCanvas" width="0" height="0"></canvas>
+		<!-- <div id="UIContent"></div> -->
 
 		<!--Footer-->
-		<div id="idFooter"></div>
+		<div id="UIFooter" class="flexBar">
+			<div></div>
+			<div></div>
+			<div></div>
+			<input type="hidden" id="idTESTINGzValue" name="zValue" value="1.0">
+		</div>
 
-		<!-- Background Canvas -->
-		<div id="bgDiv"> <canvas id="idCanvas" width="0" height="0"></canvas> </div>
-
-		<!-- 3rd Party Scripts -->
+		<!-- 3rd Party Scripts (CDN) -->
 		<script src="https://code.jquery.com/jquery-3.2.1.min.js"
 			integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
 			crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"
-			integrity="sha256-uWtSXRErwH9kdJTIr1swfHFJn/d/WQ6s72gELOHXQGM="
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js" 
+			integrity="sha256-W9FML0cw6SfScX3k0Z8iTWhaZGSEUrR3R3KWfRA6lnI=" 
 			crossorigin="anonymous"></script>
 
-		<!-- Base -->
-		<script type="text/javascript" src="js/Base/Clock.js"></script>
-		<script type="text/javascript" src="js/Base/Functions.js"></script>
-		<script type="text/javascript" src="js/Base/Mouse.js"></script>
-		<script type="text/javascript" src="js/Base/MenuList.js"></script>
-		<script type="text/javascript" src="js/Base/PanelList.js"></script>
-		<script type="text/javascript" src="js/Base/ThemeList.js"></script>
-		<script type="text/javascript" src="js/Base/ShapeInterface.js"></script>
-		<script type="text/javascript" src="js/Base/ShapeEffects.js"></script>
-		<script type="text/javascript" src="js/Base/ShapeSelector.js"></script>
-		<!-- Shapes -->
-		<script type="text/javascript" src="js/Shapes/Circle.js"></script>
-		<!-- Modifiers -->
-		<script type="text/javascript" src="js/Modifiers/Mod.js"></script>
-		<script type="text/javascript" src="js/Modifiers/Trigger.js"></script>
-		<!-- Effects -->
-		<script type="text/javascript" src="js/Effects/FXEyes.js"></script>
-		<!-- Components -->
-		<script type="text/javascript" src="js/Components/UIButton.js"></script>
-		<script type="text/javascript" src="js/Components/UIPanel.js"></script>
-		<!-- Form -->
-		<script type="text/javascript" src="js/Form/UIContent.js"></script>
-		<script type="text/javascript" src="js/Form/UIElement.js"></script>
-		<script type="text/javascript" src="js/Form/UIAnimation.js"></script>
-		<script type="text/javascript" src="js/Form/UIRequest.js"></script>
-		<script type="text/javascript" src="js/Form/UIWell.js"></script>
-		<script type="text/javascript" src="js/Form/UIReceptacle.js"></script>
-		<script type="text/javascript" src="js/Form/UIFile.js"></script>
-		<script type="text/javascript" src="js/Form/UISpacer.js"></script>
-		<script type="text/javascript" src="js/Form/UISeparator.js"></script>
-		<script type="text/javascript" src="js/Form/UISplit.js"></script>
-		<script type="text/javascript" src="js/Form/UIListItem.js"></script>
-		<script type="text/javascript" src="js/Form/UIProgress.js"></script>
-		<script type="text/javascript" src="js/Form/UIStrength.js"></script>
+		<!-- 3rd Party Scripts (Local) -->
+		<script type="text/javascript" src="public/js/wNumb.js"></script>
+		<script type="text/javascript" src="public/js/nouislider.js"></script>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+		<!-- System -->
+		<script type="text/javascript" src="public/js/System/Clock.js"></script>
+		<script type="text/javascript" src="public/js/System/Mouse.js"></script>
+		<script type="text/javascript" src="public/js/System/Functions.js"></script>
+		<!-- File Formats -->
+		<script type="text/javascript" src="public/js/FileFormat/FileLoader.js"></script>
+		<script type="text/javascript" src="public/js/FileFormat/ROB.js"></script>
+		<script type="text/javascript" src="public/js/FileFormat/SVG.js"></script>
+		<script type="text/javascript" src="public/js/FileFormat/IMG.js"></script>
+		<!-- Processing -->
+		<script type="text/javascript" src="public/js/Processing/Canny.js"></script>
+		<!-- Layout -->
+		<script type="text/javascript" src="public/js/Layout/MenuList.js"></script>
+		<script type="text/javascript" src="public/js/Layout/PanelList.js"></script>
+		<script type="text/javascript" src="public/js/Layout/ThemeList.js"></script>
+		<!-- UI Shape System -->
+		<script type="text/javascript" src="public/js/Shape/Shape.js"></script>
+		<script type="text/javascript" src="public/js/Shape/ShapePrototype.js"></script>
+		<script type="text/javascript" src="public/js/Shape/ShapeSelector.js"></script>
+		<script type="text/javascript" src="public/js/Shape/ShapeInterface.js"></script>
+		<script type="text/javascript" src="public/js/Shape/ShapeEffects.js"></script>
+		<!-- Shape Modifiers -->
+		<script type="text/javascript" src="public/js/Modifiers/Mod.js"></script>
+		<script type="text/javascript" src="public/js/Modifiers/Trigger.js"></script>
+		<!-- UI Base Components -->
+		<script type="text/javascript" src="public/js/Components/UIButton.js"></script>
+		<script type="text/javascript" src="public/js/Components/UIPanel.js"></script>
+		<!-- UI Form Components -->
+		<script type="text/javascript" src="public/js/Form/UIContent.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIElement.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIAnimation.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIRequest.js"></script>
+		<script type="text/javascript" src="public/js/Form/UISplit.js"></script>
+		<script type="text/javascript" src="public/js/Form/UILightButton.js"></script>
+		<script type="text/javascript" src="public/js/Form/UISubmitButton.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIWell.js"></script>
+		<script type="text/javascript" src="public/js/Form/UICarousel.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIContainer.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIFile.js"></script>
+		<script type="text/javascript" src="public/js/Form/UISpacer.js"></script>
+		<script type="text/javascript" src="public/js/Form/UISeparator.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIListItem.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIBinaryPicker.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIMultiPicker.js"></script>
+		<script type="text/javascript" src="public/js/Form/UISlidePicker.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIToggle.js"></script>
+		<script type="text/javascript" src="public/js/Form/UITextBox.js"></script>
+		<script type="text/javascript" src="public/js/Form/UINumberBox.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIProgress.js"></script>
+		<script type="text/javascript" src="public/js/Form/UIStrength.js"></script>
+		<script type="text/javascript" src="public/js/Form/UICanvas.js"></script>
+		<script type="text/javascript" src="public/js/Form/UISVGPreview.js"></script>
 		<!-- Data -->
-		<script type="text/javascript" src="js/Data/RQGet.js"></script>
-		<script type="text/javascript" src="js/Data/State.js"></script>
+		<script type="text/javascript" src="public/js/Data/RQGet.js"></script>
+		<script type="text/javascript" src="public/js/Data/State.js"></script>
 
 		<script type="text/javascript">
-			const refreshRate	= 20;
-			const marginHeight	= 50;
+			const refreshRate = 20;
+			const marginHeight  = 50;
 
 			RQGet.setState(DrawBotState);
 
-			var shapeSettings	= { shape: 'Circle', radius: 20, border: 2, distance: 10	};
-			var startAnimation	= { name: 'bounce', speed: 50, direction: 'forwardDiagonal'	};
-			var periodicAnimation	= { speed: 40, interval: 4000, startDelay: 8000			};
+    		var shapeSettings = {
+				shape: 'Circle',
+				radius: 20,
+				border: 2,
+				distance: 10
+			};
+
+			var startAnimation = {
+				name: 'bounce',
+				speed: 50,
+				direction: 'forwardDiagonal'
+			};
+      
+			var periodicAnimation = {
+				speed: 40,
+				interval: 4000,
+				startDelay: 8000
+			};
 
 			var mouse = new Mouse();
 			var clock = new Clock(refreshRate);
+
 			var theme = ThemeList.theme('Default');
 
-			var ui 	= new ShapeInterface('idCanvas', shapeSettings, theme, marginHeight, windowWidth(), windowHeight());
-			var fx 	= new ShapeEffects(ui.ctx(), ui.shapes, ui.shape(), ui.rows(), ui.columns(), startAnimation, periodicAnimation);
+			var ui  = new ShapeInterface(shapeSettings, theme, marginHeight, windowWidth(), windowHeight());
+			var fx  = new ShapeEffects(ui.ctx(), ui.shapes, ui.shape(), ui.rows(), ui.columns(), startAnimation, periodicAnimation);
+
+			//ui.makeBland();
+
+			/*
+			var socket = io.connect();
+
+			socket.on('MESSAGE', (data) => {
+				console.log(data);
+				socket.emit("Received!");
+			});
+
+			socket.on('disconnect', () => {
+		        socket.open();
+		    });
+			*/
+
+			document.getElementById('UIHeader').addEventListener('click', function() { socket.emit('click'); });
 
 			(function () {
+				var blurred = false;
+
 				function main(tFrame) {
-					if (clock.running)
+					if (clock.running && !blurred)
 						window.requestAnimationFrame(main);
 
 					var nextTick = clock.lastTick + clock.tickLength,
-						numTicks = 0;
+					numTicks = 0;
 
 					if (tFrame > nextTick) {
 						var timeSinceTick = tFrame - clock.lastTick;
@@ -125,7 +192,6 @@
 					queueUpdates(numTicks);
 
 					ui.render(tFrame);
-					fx.render(tFrame);
 
 					clock.lastRender = tFrame;
 				}
@@ -139,8 +205,9 @@
 					}
 				}
 
-				$('#idHeader').css('background-color', theme.border);
-				$('#idFooter').css('background-color', theme.border);
+				window.addEventListener('blur',  function() { blurred = true;  }, false);
+
+				window.addEventListener('focus', function() { blurred = false; clock.lastTick = performance.now(); window.requestAnimationFrame(main); }, false);
 
 				ui.showMenu('M.Main', 2000);
 
@@ -148,8 +215,7 @@
 			})();
 
 			$(window).resize(function(){
-				if (shapeSettings && ui)
-					ui.changeDimensions(windowWidth(), windowHeight());
+				ui.changeDimensions(windowWidth(), windowHeight());
 			});
 
 			DrawBotState.update({
